@@ -1,0 +1,53 @@
+import literal.LiteralRegex;
+
+import java.io.InputStream;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class Input {
+
+    private final Scanner scanner;
+
+    public Input(InputStream in, String delimiter) {
+        this.scanner = new Scanner(in, "UTF-8");
+        this.scanner.useDelimiter(delimiter);
+    }
+
+    /**
+     * Scanner을 통해 pattern에 해당하는 정규표현식을 입력받습니다.
+     *
+     * 올바르게 입력되지 않은 경우 에러 메시지를 출력하며, 다시 입력받습니다.
+     * 입력받은 뒤, 입력 버퍼를 비웁니다.
+     * @param pattern 입력받을 정규표현식
+     * @return 정규표현식을 통해 입력받은 문자열
+     */
+    public String getByPattern(String pattern) {
+        while (true){
+            try {
+                String ret = scanner.next(pattern);
+                scanner.skip(LiteralRegex.FILE_DELIMITER);
+                return ret.trim();
+            } catch (InputMismatchException e) {
+                scanner.next();
+                return null;
+            }
+        }
+    }
+
+    public boolean hasNext(){
+        return scanner.hasNextLine();
+    }
+
+    /**
+     * 인풋 객체를 닫습니다. 대부분의 경우 종료할 때에 실행됩니다.
+     * @return 정상 종료하는 경우 0, Scanner가 정상적으로 닫히지 않는 경우 1
+     */
+    public int close(){
+        try{
+            scanner.close();
+            return 0;
+        } catch (IllegalStateException e) {
+            return 1;
+        }
+    }
+}
