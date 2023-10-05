@@ -1,6 +1,11 @@
-import literal.ConsolePrompt;
 import literal.LiteralRegex;
 import literal.Literals;
+import repository.MovieRepository;
+import repository.MovieScheduleRepository;
+import repository.TicketRepository;
+import service.MovieScheduleService;
+import service.MovieService;
+import service.TicketService;
 
 import java.util.List;
 
@@ -8,19 +13,28 @@ import java.util.List;
 public class Console {
 
     private final Input input;
-    private final MovieManager movieManager;
+    private final MovieService movieService;
+    private final MovieScheduleService movieScheduleService;
+    private final TicketService ticketService;
     private final FileLoader fileLoader;
 
     public Console() {
         input = new Input(System.in, LiteralRegex.CONSOLE_DELIMITER);
         fileLoader = new FileLoader();
-        movieManager = new MovieManager(fileLoader);
+        movieService = new MovieService(new MovieRepository());
+        movieScheduleService = new MovieScheduleService(new MovieScheduleRepository());
+        ticketService = new TicketService(new TicketRepository());
     }
 
     public int mainMenu(){
         while (true) {
             String command = "";
-            printf(ConsolePrompt.MAIN_MENU_PROMPT);
+            printf("============== 메인메뉴 ==============\n" +
+                    "1. 영화관리\n" +
+                    "2. 예매\n" +
+                    "3. 예매취소\n" +
+                    "0. 종료 \n" +
+                    "입력: ");
             if ((command = input.getByPattern(LiteralRegex.MAIN_INPUT)) == null) {
                 printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
                 continue;
@@ -35,8 +49,8 @@ public class Console {
 
     private void managementMenu() {
         int page = 1;
-        int totalPage = movieManager.getTotalPages();
-        List<String> movies = movieManager.getSortedMovieNames();
+        int totalPage = movieService.getTotalPages();
+        List<String> movies = movieService.getSortedMovieNames();
 
         while (true) {
             String command = "";
@@ -64,20 +78,21 @@ public class Console {
                 }
 
                 case Literals.PREVIOUS_PAGE: {
-                    if (movieManager.hasPreviousPage(page)) page--;
+                    if (movieService.hasPreviousPage(page)) page--;
                     else printError("이전 페이지가 존재하지 않습니다.");
                     break;
                 }
 
                 case Literals.NEXT_PAGE: {
-                    if (movieManager.hasNextPage(page)) page++;
+                    if (movieService.hasNextPage(page)) page++;
                     else printError("다음 페이지가 존재하지 않습니다.\n");
                     break;
                 }
 
                 case Literals.ADD_MOVIE: {
                     addMovieMenu();
-                    movies = movieManager.getSortedMovieNames();
+                    movies = movieService.getSortedMovieNames();
+                    totalPage = movieService.getTotalPages();
                     break;
                 }
                 case Literals.BACK: return;
@@ -100,7 +115,7 @@ public class Console {
                 continue;
             }
             int runningTime = Integer.parseInt(runningTimeStr);
-            movieManager.addMovie(movieName, runningTime);
+            movieService.addMovie(movieName, runningTime);
             println("영화를 저장했습니다.");
             break;
         }

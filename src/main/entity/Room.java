@@ -1,10 +1,11 @@
 package entity;
 
-public class Room {
+public class Room extends Entity<Long>{
 
     private final Seat[][] seats;
 
-    public Room(Seat[][] seats) {
+    public Room(Long roomNumber, Seat[][] seats) {
+        super(roomNumber);
         this.seats = seats;
     }
 
@@ -17,5 +18,9 @@ public class Room {
         }
         sb.append('\n');
         return sb.toString();
+    }
+
+    public Long getRoomNumber() {
+        return getId();
     }
 }

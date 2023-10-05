@@ -21,7 +21,8 @@ public class RoomTest {
                 seats[i][j] = new Seat(('A' + i) + Integer.toString(j), j%2 == 0, false);
             }
         }
-        Room room = new Room(seats);
+        long roomNumber = 1;
+        Room room = new Room(roomNumber, seats);
         String[] actual = room.toString().split("\n");
         System.out.println(Arrays.toString(actual));
         assertThat(actual).hasSize(row + 1);

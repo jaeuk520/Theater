@@ -1,19 +1,14 @@
 package entity;
 
-public class Movie {
+public class Movie extends Entity<String>{
 
-    private final String id;
     private final String name;
     private final int runningTime;
 
     public Movie(String id, String name, int runningTime) {
-        this.id = id;
+        super(id);
         this.name = name;
         this.runningTime = runningTime;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getName() {
@@ -25,6 +20,6 @@ public class Movie {
     }
 
     public String toString() {
-        return id + "$" + runningTime + "$" + name;
+        return id + "$" + runningTime + "$" + name + '\n';
     }
 }
