@@ -1,6 +1,8 @@
 package entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class MovieSchedule extends Entity<String> {
@@ -9,10 +11,10 @@ public class MovieSchedule extends Entity<String> {
     private final LocalDateTime startAt;
     private final Room room;
 
-    public MovieSchedule(Movie movie, LocalDateTime startAt, Room room) {
-        super(null);
+    public MovieSchedule(String id, Movie movie, LocalDate startAtDate, LocalTime startAtTime, Room room) {
+        super(id);
         this.movie = movie;
-        this.startAt = startAt;
+        this.startAt = LocalDateTime.of(startAtDate, startAtTime);
         this.room = room;
     }
 

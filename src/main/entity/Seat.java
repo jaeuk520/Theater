@@ -2,8 +2,8 @@ package entity;
 
 public class Seat extends Entity<String>{
 
-    private boolean isAvailable;
-    private boolean isReserved;
+    private Boolean isAvailable;
+    private Boolean isReserved;
 
     public Seat(String id, boolean isAvailable, boolean isReserved) {
         super(id);

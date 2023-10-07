@@ -13,7 +13,7 @@ public class RepositoryTest {
     @Test
     @DisplayName("EntityWriter가 올바르게 텍스트 파일을 작성한다")
     public void entityWriterTest() throws Exception{
-        EntityWriter<String, Movie> writer = new EntityWriter<>("test.txt");
+        EntityWriter<Movie> writer = new EntityWriter<>("test.txt");
         HashMap<String, Movie> data = new HashMap<>();
         Movie m1 = new Movie("OPHM", "오펜하이머", 180);
         Movie m2 = new Movie("AVGS", "어벤져스", 200);

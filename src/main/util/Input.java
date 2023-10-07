@@ -1,6 +1,8 @@
+package util;
+
 import literal.LiteralRegex;
 
-import java.io.InputStream;
+import java.io.*;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -16,6 +18,16 @@ public class Input {
     public Input(InputStream in, String delimiter) {
         this.scanner = new Scanner(in, "UTF-8");
         this.scanner.useDelimiter(delimiter);
+    }
+
+    public static Input getInstance(String path, String delimiter) {
+        File file = new File(path);
+        try {
+            file.createNewFile();
+            return new Input(new FileInputStream(path), delimiter);
+        } catch (IOException e) {
+            throw new RuntimeException("파일 검증에 실패했습니다.");
+        }
     }
 
     /**
@@ -36,6 +48,10 @@ public class Input {
                 return null;
             }
         }
+    }
+
+    public String readLine() {
+        return scanner.nextLine();
     }
 
     public boolean hasNext(){

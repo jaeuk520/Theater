@@ -8,7 +8,8 @@ import literal.Path;
 public class MovieRepository extends StringIdEntityDatabase<Movie> {
 
     public MovieRepository() {
-        super(IdStrategy.UUID,
+        super(Movie.class,
+                IdStrategy.UUID,
                 4,
                 Path.MOVIE_DATA);
     }

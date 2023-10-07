@@ -1,10 +1,14 @@
+package util;
+
 import literal.LiteralRegex;
 import literal.Literals;
 import repository.MovieRepository;
 import repository.MovieScheduleRepository;
+import repository.RoomRepository;
 import repository.TicketRepository;
 import service.MovieScheduleService;
 import service.MovieService;
+import service.RoomService;
 import service.TicketService;
 
 import java.util.List;
@@ -16,11 +20,11 @@ public class Console {
     private final MovieService movieService;
     private final MovieScheduleService movieScheduleService;
     private final TicketService ticketService;
-    private final FileLoader fileLoader;
+    private final RoomService roomService;
 
     public Console() {
         input = new Input(System.in, LiteralRegex.CONSOLE_DELIMITER);
-        fileLoader = new FileLoader();
+        roomService = new RoomService(new RoomRepository());
         movieService = new MovieService(new MovieRepository());
         movieScheduleService = new MovieScheduleService(new MovieScheduleRepository());
         ticketService = new TicketService(new TicketRepository());

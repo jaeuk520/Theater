@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class EntityWriter<ID, E> {
+public class EntityWriter<E> {
     private final String path;
 
     public EntityWriter(String path) {
@@ -35,7 +35,7 @@ public class EntityWriter<ID, E> {
      * 주어진 data로 파일을 모두 덮어씁니다. 주로 프로그램을 종료하거나, 특수하게 모든 텍스트 파일을 덮어써야 하는 경우 사용합니다.
      * @return 쓰기에 성공하면 true, 실패하면 false를 반환합니다.
      */
-    public boolean dump(HashMap<ID, E> data) {
+    public boolean dump(HashMap<String, E> data) {
         try {
             File f = new File(path);
             f.createNewFile();

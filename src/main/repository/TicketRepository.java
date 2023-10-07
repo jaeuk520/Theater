@@ -7,7 +7,8 @@ import literal.Path;
 
 public class TicketRepository extends StringIdEntityDatabase<Ticket> {
     public TicketRepository() {
-        super(IdStrategy.UUID,
+        super(Ticket.class,
+                IdStrategy.UUID,
                 6,
                 Path.RESERVATION_DATA);
     }

@@ -10,16 +10,17 @@ import java.util.Optional;
  * HashMap을 사용하며, idStrategy는 IdStrategy.UUID 또는 IdStrategy.NUMBER 중 하나입니다. <p>
  * UUID의 경우 길이 UUIDLength의 랜덤한 문자열이 ID로 들어가고, NUMBER의 경우 lastId를 만들고, lastId를 1 증가시킵니다.
  */
-public abstract class EntityDatabase<ID, E> {
+public abstract class EntityDatabase<E> {
 
-    protected final HashMap<ID, E> data;
+    protected final HashMap<String, E> data;
     protected final int idStrategy;
-    private final EntityLoader<ID, E> entityLoader;
-    private final EntityWriter<ID, E> entityWriter;
+    private final EntityLoader<E> entityLoader;
+    private final EntityWriter<E> entityWriter;
 
-    public EntityDatabase(int idStrategy, String path) {
+    public EntityDatabase(Class<E> entityType, int idStrategy, String path) {
         this.data = new HashMap<>();
-        this.entityLoader = new EntityLoader<>(path);
+        DatabaseContext.putDatabase(entityType, data);
+        this.entityLoader = new EntityLoader<>(path, entityType);
         this.entityWriter = new EntityWriter<>(path);
         this.idStrategy = idStrategy;
         this.entityLoader.load(this.data);
@@ -32,19 +33,19 @@ public abstract class EntityDatabase<ID, E> {
      */
     public abstract boolean save(E entity);
 
-    public boolean save(E entity, ID id) {
+    public boolean save(E entity, String id) {
         if (data.containsKey(id)) return false;
         data.put(id, entity);
         return true;
     }
 
-    public boolean delete(ID id) {
+    public boolean delete(String id) {
         if (!data.containsKey(id)) return false;
         data.remove(id);
         return true;
     }
 
-    public Optional<E> findById(ID id) {
+    public Optional<E> findById(String id) {
         if (!data.containsKey(id)) return Optional.empty();
         return Optional.of(data.get(id));
     }
