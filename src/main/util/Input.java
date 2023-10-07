@@ -4,6 +4,7 @@ import literal.LiteralRegex;
 
 import java.io.*;
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Input {
@@ -45,6 +46,10 @@ public class Input {
                 return ret.trim();
             } catch (InputMismatchException e) {
                 scanner.next();
+                return null;
+            } catch (NoSuchElementException e) {
+//                e.printStackTrace();
+                System.err.println("파일이 손상되었습니다.");
                 return null;
             }
         }
