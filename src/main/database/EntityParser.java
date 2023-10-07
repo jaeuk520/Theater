@@ -1,6 +1,7 @@
 package database;
 
 import entity.Entity;
+import exception.IllegalPropertyParseException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,7 +34,7 @@ public class EntityParser {
         try {
             return (T) method.invoke(null, data);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("속성 파싱에 실패했습니다.");
+            throw new IllegalPropertyParseException();
         }
     }
 

@@ -1,5 +1,8 @@
 package util;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Pattern;
+import exception.IllegalPropertyParseException;
+import exception.PatternMismatchException;
 import literal.LiteralRegex;
 
 import java.io.*;
@@ -48,9 +51,7 @@ public class Input {
                 scanner.next();
                 return null;
             } catch (NoSuchElementException e) {
-//                e.printStackTrace();
-                System.err.println("파일이 손상되었습니다.");
-                return null;
+                throw new PatternMismatchException(pattern);
             }
         }
     }

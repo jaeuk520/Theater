@@ -1,5 +1,6 @@
 package database;
 
+import exception.EntityInstantiateException;
 import literal.IdStrategy;
 
 import java.util.UUID;
@@ -23,6 +24,14 @@ public class StringIdEntityDatabase<E> extends EntityDatabase<E>{
         do {
             id = UUID.randomUUID().toString().substring(0, UUIDLength).toUpperCase();
         } while (data.containsKey(id));
+
+        // Set ID of an entity using reflection API
+        try {
+            entity.getClass().getDeclaredField("id").set(entity, id);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new EntityInstantiateException();
+        }
+
         data.put(id, entity);
         return true;
     }

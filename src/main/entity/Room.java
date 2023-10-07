@@ -11,7 +11,7 @@ public class Room extends Entity<Long>{
 
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        sb.append(seats.length + " " + seats[0].length + '\n');
+        sb.append(String.format("%d %d\n", seats.length,seats[0].length));
         for (Seat[] seat : seats){
             for (Seat s : seat) sb.append(s.isAvailable() ? "O" : "X");
             sb.append('\n');

@@ -1,5 +1,7 @@
 package database;
 
+import exception.EntityInstantiateException;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 
@@ -17,8 +19,7 @@ public class EntityFactory {
             }
             return (E) constructor.newInstance(typedArguments);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("객체 생성에 실패했습니다.");
+            throw new EntityInstantiateException();
         }
     }
 }
