@@ -47,6 +47,7 @@ public class Console {
                 case Literals.QUIT: return exit();
                 case Literals.RESERVATION: { reservationMenu(); break; }
                 case Literals.MANAGEMENT: { managementMenu(); break; }
+                case Literals.CANCEL_RESERVATION: { cancelReservationMenu(); break; }
             }
         }
     }
@@ -129,8 +130,12 @@ public class Console {
 
     }
 
-    public void reservationMenu(){
+    public void reservationMenu() {
         println("Reservation menu here");
+    }
+    
+    public void cancelReservationMenu() {
+        println("cancel Reservation menu here");
     }
 
     public void run(){
