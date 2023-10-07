@@ -1,5 +1,7 @@
 package database;
 
+import literal.IdStrategy;
+
 import java.util.UUID;
 
 /**
@@ -9,8 +11,9 @@ import java.util.UUID;
 public class StringIdEntityDatabase<E> extends EntityDatabase<E>{
 
     protected final int UUIDLength;
-    public StringIdEntityDatabase(Class<E> entityType, int idStrategy, int uuidLength, String path) {
-        super(entityType, idStrategy, path);
+    public StringIdEntityDatabase(Class<E> entityType, int uuidLength, String path) {
+        super(entityType, path);
+        this.idStrategy = IdStrategy.UUID;
         this.UUIDLength = uuidLength;
     }
 

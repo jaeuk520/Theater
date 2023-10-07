@@ -12,17 +12,15 @@ import java.util.Optional;
  */
 public abstract class EntityDatabase<E> {
 
-    protected final HashMap<String, E> data;
-    protected final int idStrategy;
+    protected final HashMap<String, E> data = new HashMap<>();
+    protected int idStrategy;
     private final EntityLoader<E> entityLoader;
     private final EntityWriter<E> entityWriter;
 
-    public EntityDatabase(Class<E> entityType, int idStrategy, String path) {
-        this.data = new HashMap<>();
+    public EntityDatabase(Class<E> entityType, String path) {
         DatabaseContext.putDatabase(entityType, data);
         this.entityLoader = new EntityLoader<>(path, entityType);
         this.entityWriter = new EntityWriter<>(path);
-        this.idStrategy = idStrategy;
         this.entityLoader.load(this.data);
     }
 
