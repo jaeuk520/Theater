@@ -20,14 +20,16 @@ public class EntityFactory {
                 typedArguments[i] = EntityParser.resolve(parameters[i].getType(), (String) args[i]);
             }
             //의미 규칙 추가: 영화 id, 영화 제목 중복 허용 X
-            validateDuplication(data, typedArguments[0].toString(), typedArguments[1].toString());
+            if(entityClass.getName().equals("entity.Movie")) {
+                validateMovieDuplication(data, typedArguments[0].toString(), typedArguments[1].toString());
+            }
             return (E) constructor.newInstance(typedArguments);
         } catch (Exception e) {
             throw new EntityInstantiateException();
         }
     }
 
-    private static <E> void validateDuplication(HashMap<String,E> data, String movieId, String movieName) {
+    private static <E> void validateMovieDuplication(HashMap<String,E> data, String movieId, String movieName) {
         data.forEach((key, value) -> {
             if(movieId.equals(key) || movieName.equals((value.toString().split("\\$"))[2].replaceAll("\n", ""))) {
                 throw new EntityInstantiateException();
