@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import repository.MovieRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 class MovieServiceTest {
@@ -21,4 +22,5 @@ class MovieServiceTest {
         Assertions.assertThat(actual.get().getRunningTime()).isEqualTo(180);
         System.out.println(actual.get().getId());
     }
+
 }

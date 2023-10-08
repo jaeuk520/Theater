@@ -33,7 +33,7 @@ public class EntityLoader<E> {
 
         while (input.hasNext()) {
             String[] attr = input.readLine().split("\\$");
-            data.put(attr[0], EntityFactory.createEntity(type, attr));
+            data.put(attr[0], EntityFactory.createEntity(type, data, attr));
         }
     }
 
