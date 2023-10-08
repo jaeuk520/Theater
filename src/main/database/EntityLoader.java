@@ -3,6 +3,7 @@ package database;
 import entity.MovieSchedule;
 import entity.Room;
 import entity.Seat;
+import entity.Ticket;
 import exception.EntityInstantiateException;
 import literal.LiteralRegex;
 import repository.RoomRepository;
@@ -47,24 +48,36 @@ public class EntityLoader<E> {
             if(type.getName().equals("entity.MovieSchedule")) {
                 //상영 스케줄 데이터 파일 검사
                 validateRoomIndex(Integer.parseInt(attr[4]));
-                validateScheduleCodeDuplication(data, attr[0]);
+                validateCodeDuplication(data, attr[0]);
                 validateMovieScheduleDuplication();
             }
-            data.put(attr[0], EntityFactory.createEntity(type, data, attr));
+            if(type.getName().equals("entity.Ticket")) {
+                validateCodeDuplication(data,attr[0]);
+                validateSeatDuplication(data, attr[1], attr[2]);
+            }
+            data.put(attr[0], EntityFactory.createEntity(type, attr));
         }
+    }
+
+    private <E> void validateCodeDuplication(HashMap<String, E> data, String code) {
+        //의미 규칙: 같은 <스케줄코드>/<예매코드>를 가진 데이터는 최대 한 개만 존재한다.
+        data.forEach((key, value) -> {
+            if(code.equals(key)) {
+                throw new EntityInstantiateException();
+            }
+        });
+    }
+    private <E> void validateSeatDuplication(HashMap<String, E> data, String scheduleCode, String seat) {
+        //의미 규칙: 서로 다른 두 예매 정보에 대해서, <영화 스케줄>이 동일한 경우, 좌석번호는 서로 달라야 한다.
+        data.forEach((key, value) -> {
+            if(scheduleCode.equals((((Ticket)value).getMovieSchedule()).getId()) && seat.equals(((Ticket)value).getSeatId())) {
+                throw new EntityInstantiateException();
+            }
+        });
     }
 
     private <E> void validateMovieScheduleDuplication() {
         //의미 규칙: 임의의 시각에 대해서, 하나의 영화관에서 상영되는 영화의 개수는 1개 이하여야 한다.
-    }
-
-    private <E> void validateScheduleCodeDuplication(HashMap<String, E> data, String scheduleCode) {
-        //의미 규칙: 같은 <스케줄코드>를 가진 데이터는 최대 한 개만 존재한다.
-        data.forEach((key, value) -> {
-            if(scheduleCode.equals(key)) {
-                throw new EntityInstantiateException();
-            }
-        });
     }
 
     private static void validateRoomIndex(int room) {

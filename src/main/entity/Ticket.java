@@ -6,7 +6,7 @@ public class Ticket extends Entity<String> {
     private final String seatId;
     private final String id;
 
-    public Ticket(MovieSchedule movieSchedule, String seatId, String reservationId) {
+    public Ticket(String reservationId, MovieSchedule movieSchedule, String seatId) {
         super(null);
         this.movieSchedule = movieSchedule;
         this.seatId = seatId;
@@ -18,5 +18,13 @@ public class Ticket extends Entity<String> {
         return id + "$" + movieSchedule.getMovie().getName() + "$" +
                 movieSchedule.toString() +
                 seatId + '\n';
+    }
+
+    public MovieSchedule getMovieSchedule() {
+        return movieSchedule;
+    }
+
+    public String getSeatId() {
+        return seatId;
     }
 }
