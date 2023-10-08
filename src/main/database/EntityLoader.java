@@ -1,10 +1,16 @@
 package database;
 
+import entity.MovieSchedule;
 import entity.Room;
 import entity.Seat;
+import exception.EntityInstantiateException;
 import literal.LiteralRegex;
+import repository.RoomRepository;
+import service.RoomService;
 import util.Input;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -33,12 +39,52 @@ public class EntityLoader<E> {
 
         while (input.hasNext()) {
             String[] attr = input.readLine().split("\\$");
+            //의미 규칙 검사:
+            if(type.getName().equals("entity.Movie")) {
+                //영화 데이터 파일 검사
+                validateMovieDuplication(data, attr[0].toString(), attr[1].toString());
+            }
+            if(type.getName().equals("entity.MovieSchedule")) {
+                //상영 스케줄 데이터 파일 검사
+                validateRoomIndex(Integer.parseInt(attr[4]));
+                validateScheduleCodeDuplication(data, attr[0]);
+                validateMovieScheduleDuplication();
+            }
             data.put(attr[0], EntityFactory.createEntity(type, data, attr));
         }
     }
 
+    private <E> void validateMovieScheduleDuplication() {
+        //의미 규칙: 임의의 시각에 대해서, 하나의 영화관에서 상영되는 영화의 개수는 1개 이하여야 한다.
+    }
+
+    private <E> void validateScheduleCodeDuplication(HashMap<String, E> data, String scheduleCode) {
+        //의미 규칙: 같은 <스케줄코드>를 가진 데이터는 최대 한 개만 존재한다.
+        data.forEach((key, value) -> {
+            if(scheduleCode.equals(key)) {
+                throw new EntityInstantiateException();
+            }
+        });
+    }
+
+    private static void validateRoomIndex(int room) {
+        // <영화상영관번호> 1이상, 현재 영화관의 상영관 개수 이하
+        if(room < 1 || room > DatabaseContext.getDatabase(Room.class).size()) {
+            throw new EntityInstantiateException();
+        }
+    }
+
+    private static <E> void validateMovieDuplication(HashMap<String,E> data, String movieId, String movieName) {
+        data.forEach((key, value) -> {
+            if(movieId.equals(key) || movieName.equals((value.toString().split("\\$"))[2].replaceAll("\n", ""))) {
+                throw new EntityInstantiateException();
+            }
+        });
+    }
+
     public void loadTheater(HashMap<String, Room> data) {
         long roomNumber = 1L;
+        Long roomMax = Long.parseLong(input.readLine());
         while(input.hasNext()) {
             List<Integer> rowCol = Arrays.stream(input.getByPattern("\\d\\ \\d")
                     .split(" "))
@@ -57,8 +103,11 @@ public class EntityLoader<E> {
                     );
                 }
             }
-            Room room = new Room(roomNumber++, seats);
-            data.put(Long.toString(roomNumber), room);
+            Room room = new Room(roomNumber, seats);
+            data.put(Long.toString(roomNumber++), room);
+        }
+        if(roomNumber != roomMax + 1) {
+            throw new EntityInstantiateException();
         }
     }
 }
