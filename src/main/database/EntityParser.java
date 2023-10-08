@@ -1,9 +1,5 @@
 package database;
 
-import entity.Entity;
-import exception.IllegalPropertyParseException;
-
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,22 +15,6 @@ public class EntityParser {
         for(Method m : EntityParser.class.getDeclaredMethods()) {
             if (m.getName().startsWith("parse"))
                 map.put(m.getReturnType(), m);
-        }
-    }
-
-    public static <T> T resolve(Class<?> entityType, String data) {
-        Method method = map.get(entityType);
-
-        if (Entity.class.isAssignableFrom(entityType)) {
-            // Subclass, need to fetch from hashmap
-            // data is an ID of it
-            HashMap<String, ?> database = DatabaseContext.getDatabase(entityType);
-            return (T) database.get(data);
-        }
-        try {
-            return (T) method.invoke(null, data);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalPropertyParseException();
         }
     }
 

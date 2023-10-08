@@ -15,7 +15,7 @@ public class EntityFactory {
             Object[] typedArguments = new Object[args.length];
 
             for (int i = 0; i < args.length; i++) {
-                typedArguments[i] = EntityParser.resolve(parameters[i].getType(), (String) args[i]);
+                typedArguments[i] = EntityPropertyTypeResolver.resolve(parameters[i].getType(), (String) args[i]);
             }
             return (E) constructor.newInstance(typedArguments);
         } catch (Exception e) {
