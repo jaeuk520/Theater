@@ -79,6 +79,7 @@ public class Console {
                         printError("해당 영화가 존재하지 않습니다. 다시 입력해 주세요.");
                         continue;
                     }
+                    // else 인 경우 해당 영화 스케줄 추가로 넘어가야 함.
                     break;
                 }
 
@@ -131,7 +132,51 @@ public class Console {
     }
 
     public void reservationMenu() {
-        println("Reservation menu here");
+        int page = 1;
+        int totalPage = movieService.getTotalPages();
+        List<String> movies = movieService.getSortedMovieNames();
+
+        while (true) {
+            String command = "";
+
+            StringBuilder sb = new StringBuilder("============== 영화예매 ==============\n");
+            for (int i = (page-1) * 5, idx = 1; idx <= 5 && i < movies.size(); i++, idx++)
+                sb.append(idx).append(". ").append(movies.get(i)).append("\n");
+            sb.append(String.format("=========== 페이지 %d / %d ===========\n", page, totalPage));
+            sb.append("7. 이전 페이지\n8. 다음 페이지\n0. 뒤로가기\n입력: ");
+            printf(sb.toString());
+
+            if ((command = input.getByPattern(LiteralRegex.RESERVATION_INPUT)) == null) {
+                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+                continue;
+            }
+
+            switch (command) {
+                case "1": case "2": case "3": case "4": case "5": {
+                    int num = Integer.parseInt(command);
+                    if (!checkValidMovieNumber(movies, page, num)) {
+                        printError("해당 영화가 존재하지 않습니다. 다시 입력해 주세요.");
+                        continue;
+                    }
+                    // else 인 경우 해당 영화를 예매하는 곳으로 넘어가야 함
+                    break;
+                }
+
+                case Literals.PREVIOUS_PAGE: {
+                    if (movieService.hasPreviousPage(page)) page--;
+                    else printError("이전 페이지가 존재하지 않습니다.");
+                    break;
+                }
+
+                case Literals.NEXT_PAGE: {
+                    if (movieService.hasNextPage(page)) page++;
+                    else printError("다음 페이지가 존재하지 않습니다.\n");
+                    break;
+                }
+
+                case Literals.BACK: return;
+            }
+        }
     }
     
     public void cancelReservationMenu() {

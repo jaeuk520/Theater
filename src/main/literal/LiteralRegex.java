@@ -3,6 +3,7 @@ package literal;
 public class LiteralRegex {
     public static final String MAIN_INPUT = "\\s*[0-3]\\s*$";
     public static final String MANAGE_INPUT = "\\s*[0-57-9]\\s*$";
+    public static final String RESERVATION_INPUT = "\\s*[0-57-8]\\s*$";
 
     public static final String MOVIE_NAME = "\\s*.*\\s*";
     public static final String RUNNING_TIME = "\\s*[1-9][0-9]*\\s*";
