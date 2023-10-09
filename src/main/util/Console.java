@@ -17,6 +17,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import entity.Ticket;
+
 
 public class Console {
 
@@ -130,7 +132,29 @@ public class Console {
             }
         }
     }
-    
+        
+    /* 부 프롬프트 1.1: 영화 추가 */
+    private void addMovieMenu() {
+        while (true) {
+            printf("영화 이름을 입력해주세요 : ");
+            String movieName = input.getByPattern(LiteralRegex.MOVIE_NAME).trim();
+            if (movieName.contains("$")) {
+                printError("$는 포함될 수 없는 문자입니다. 다시 입력해 주세요.");
+                continue;
+            }
+            printf("러닝타임을 입력해주세요 : ");
+            String runningTimeStr = input.getByPattern(LiteralRegex.RUNNING_TIME);
+            if (runningTimeStr == null) {
+                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+                continue;
+            }
+            int runningTime = Integer.parseInt(runningTimeStr);
+            movieService.addMovie(movieName, runningTime);
+            println("영화를 저장했습니다.");
+            break;
+        }
+    }
+
     /* 부 프롬프트 1.2: 영화 상영 일정 추가 */
     private void addMovieScheduleMenu() {
         int page = 1;
@@ -146,7 +170,7 @@ public class Console {
             sb.append("7. 이전 페이지\n8. 다음 페이지\n0. 뒤로가기\n입력: ");
             printf(sb.toString());
 
-            if ((command = input.getByPattern(LiteralRegex.MANAGE_INPUT)) == null) {
+            if ((command = input.getByPattern(LiteralRegex.PAGE_NO_OPTION_INPUT)) == null) {
                 printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
                 continue;
             }
@@ -230,28 +254,6 @@ public class Console {
     private void selectMovieTimeMenu(String date) {
 
     }
-    
-    /* 부 프롬프트 1.1: 영화 추가 */
-    private void addMovieMenu() {
-        while (true) {
-            printf("영화 이름을 입력해주세요 : ");
-            String movieName = input.getByPattern(LiteralRegex.MOVIE_NAME).trim();
-            if (movieName.contains("$")) {
-                printError("$는 포함될 수 없는 문자입니다. 다시 입력해 주세요.");
-                continue;
-            }
-            printf("러닝타임을 입력해주세요 : ");
-            String runningTimeStr = input.getByPattern(LiteralRegex.RUNNING_TIME);
-            if (runningTimeStr == null) {
-                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
-                continue;
-            }
-            int runningTime = Integer.parseInt(runningTimeStr);
-            movieService.addMovie(movieName, runningTime);
-            println("영화를 저장했습니다.");
-            break;
-        }
-    }
 
     private void removeMovieMenu() {
 
@@ -273,7 +275,7 @@ public class Console {
             sb.append("7. 이전 페이지\n8. 다음 페이지\n0. 뒤로가기\n입력: ");
             printf(sb.toString());
 
-            if ((command = input.getByPattern(LiteralRegex.RESERVATION_INPUT)) == null) {
+            if ((command = input.getByPattern(LiteralRegex.PAGE_NO_OPTION_INPUT)) == null) {
                 printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
                 continue;
             }
@@ -314,7 +316,26 @@ public class Console {
             }
         }
     }
-    
+    /* 부 프롬프트 2.1: 예매 날짜 선택 */
+    private void selectReservationDateMenu(Ticket ticket) {
+
+    }
+    /* 부 프롬프트 2.2: 상영관 선택 */
+    private void selectReservationRoomMenu(Ticket ticket) {
+
+    }
+    /* 부 프롬프트 2.3: 일정 선택 */
+    private void selectReservationTimeMenu(Ticket ticket) {
+
+    }
+    /* 부 프롬프트 2.4: 좌석 선택 */
+    private void selectReservationSeatMenu(Ticket ticket) {
+
+    }
+    /* 부 프롬프트 2.5: 예매 코드 출력 */
+    private void printReservationCodeMenu(Ticket ticket) {
+        
+    }
     /* 부 프롬프트 3: 예매 취소 */
     private void cancelReservationMenu() {
         println("cancel Reservation menu here");
