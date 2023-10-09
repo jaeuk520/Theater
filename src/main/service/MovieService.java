@@ -14,7 +14,7 @@ public class MovieService {
     }
 
     public int getTotalPages() {
-        return movieRepository.size() / 5 + (movieRepository.size() % 5 != 0 ? 1 : 0);
+        return movieRepository.size() / MOVIES_PER_PAGE + (movieRepository.size() % MOVIES_PER_PAGE != 0 ? 1 : 0);
     }
 
     public boolean hasNextPage(int page) {
