@@ -11,6 +11,10 @@ import service.MovieService;
 import service.RoomService;
 import service.TicketService;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 
@@ -30,7 +34,7 @@ public class Console {
         ticketService = new TicketService(new TicketRepository());
     }
 
-    public int mainMenu(){
+    public int mainMenu() {
         while (true) {
             String command = "";
             printf("============== 메인메뉴 ==============\n" +
@@ -44,14 +48,25 @@ public class Console {
                 continue;
             }
             switch (command) {
-                case Literals.QUIT: return exit();
-                case Literals.RESERVATION: { reservationMenu(); break; }
-                case Literals.MANAGEMENT: { managementMenu(); break; }
-                case Literals.CANCEL_RESERVATION: { cancelReservationMenu(); break; }
+                case Literals.QUIT:
+                    return exit();
+                case Literals.RESERVATION: {
+                    reservationMenu();
+                    break;
+                }
+                case Literals.MANAGEMENT: {
+                    managementMenu();
+                    break;
+                }
+                case Literals.CANCEL_RESERVATION: {
+                    cancelReservationMenu();
+                    break;
+                }
             }
         }
     }
 
+    /* 부 프롬프트 1: 영화 관리 */
     private void managementMenu() {
         int page = 1;
         int totalPage = movieService.getTotalPages();
@@ -73,13 +88,17 @@ public class Console {
             }
 
             switch (command) {
-                case "1": case "2": case "3": case "4": case "5": {
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5": {
                     int num = Integer.parseInt(command);
                     if (!checkValidMovieNumber(movies, page, num)) {
                         printError("해당 영화가 존재하지 않습니다. 다시 입력해 주세요.");
                         continue;
-                    }
-                    else 
+                    } 
+                    else
                         addMovieScheduleMenu();
                     break;
                 }
@@ -112,6 +131,7 @@ public class Console {
         }
     }
     
+    /* 부 프롬프트 1.2: 영화 상영 일정 추가 */
     private void addMovieScheduleMenu() {
         int page = 1;
         int totalPage = roomService.getTotalPages();
@@ -132,13 +152,17 @@ public class Console {
             }
 
             switch (command) {
-                case "1": case "2": case "3": case "4": case "5": {
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5": {
                     int num = Integer.parseInt(command);
                     if (!checkValidRoomNumber(rooms, page, num)) {
                         printError("해당 관이 존재하지 않습니다. 다시 입력해 주세요.");
                         continue;
-                    }
-                    // else 인 경우 해당 영화 상영일 선택으로 넘어가야 함.
+                    } else
+                        selectMovieDateMenu();
                     break;
                 }
 
@@ -164,6 +188,50 @@ public class Console {
         }
     }
 
+    /* 부 프롬프트 1.3: 영화 상영일 선택 */
+    private void selectMovieDateMenu() {
+        while (true) {
+            String command = "";
+            printf("============== 일정추가 ==============\n" +
+                    "입력 (YYYY-MM-DD 형식): ");
+            if ((command = input.getByPattern(LiteralRegex.MOVIE_DATE)) == null) {
+                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+                continue;
+            }
+
+            try {
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                format.setLenient(false);
+                format.parse(command);
+
+                /* 실제로 존재하는 날짜라면 과거가 아닌지, 유효기간 내에 존재하는지 테스트 */
+                Date curDate = format.parse(format.format(new Date()));
+                Date inpDate = format.parse(command);
+                Date endDate = format.parse("2100-12-31");
+
+                if (inpDate.compareTo(curDate) < 0) {
+                    printError("지난 날짜입니다. 다시 입력해주세요.\n");
+                    continue;
+                } else if (endDate.compareTo(inpDate) < 0) {
+                    printError("2100년 이내의 날짜여야 합니다. 다시 입력해주세요.\n");
+                    continue;
+                }
+            } catch (ParseException | IllegalArgumentException e) {
+                printError("존재하지 않는 날짜입니다. 다시 입력해주세요.\n");
+                continue;
+            }
+
+            selectMovieTimeMenu(command);
+            break;
+        }
+    }
+    
+    /* 부 프롬프트 1.4: 영화 시작 시각 입력 */
+    private void selectMovieTimeMenu(String date) {
+
+    }
+    
+    /* 부 프롬프트 1.1: 영화 추가 */
     private void addMovieMenu() {
         while (true) {
             printf("영화 이름을 입력해주세요 : ");
@@ -189,6 +257,7 @@ public class Console {
 
     }
 
+    /* 부 프롬프트 2: 예매 */
     private void reservationMenu() {
         int page = 1;
         int totalPage = movieService.getTotalPages();
@@ -198,7 +267,7 @@ public class Console {
             String command = "";
 
             StringBuilder sb = new StringBuilder("============== 영화예매 ==============\n");
-            for (int i = (page-1) * 5, idx = 1; idx <= 5 && i < movies.size(); i++, idx++)
+            for (int i = (page - 1) * 5, idx = 1; idx <= 5 && i < movies.size(); i++, idx++)
                 sb.append(idx).append(". ").append(movies.get(i)).append("\n");
             sb.append(String.format("=========== 페이지 %d / %d ===========\n", page, totalPage));
             sb.append("7. 이전 페이지\n8. 다음 페이지\n0. 뒤로가기\n입력: ");
@@ -210,7 +279,11 @@ public class Console {
             }
 
             switch (command) {
-                case "1": case "2": case "3": case "4": case "5": {
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5": {
                     int num = Integer.parseInt(command);
                     if (!checkValidMovieNumber(movies, page, num)) {
                         printError("해당 영화가 존재하지 않습니다. 다시 입력해 주세요.");
@@ -221,22 +294,28 @@ public class Console {
                 }
 
                 case Literals.PREVIOUS_PAGE: {
-                    if (movieService.hasPreviousPage(page)) page--;
-                    else printError("이전 페이지가 존재하지 않습니다.");
+                    if (movieService.hasPreviousPage(page))
+                        page--;
+                    else
+                        printError("이전 페이지가 존재하지 않습니다.");
                     break;
                 }
 
                 case Literals.NEXT_PAGE: {
-                    if (movieService.hasNextPage(page)) page++;
-                    else printError("다음 페이지가 존재하지 않습니다.\n");
+                    if (movieService.hasNextPage(page))
+                        page++;
+                    else
+                        printError("다음 페이지가 존재하지 않습니다.\n");
                     break;
                 }
 
-                case Literals.BACK: return;
+                case Literals.BACK:
+                    return;
             }
         }
     }
     
+    /* 부 프롬프트 3: 예매 취소 */
     private void cancelReservationMenu() {
         println("cancel Reservation menu here");
     }
