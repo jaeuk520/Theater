@@ -18,9 +18,6 @@ public class EntityFactory {
 
             for (int i = 0; i < args.length; i++) {
                 typedArguments[i] = EntityParser.resolve(parameters[i].getType(), (String) args[i]);
-                if(typedArguments[i] == null) {
-                    throw new EntityInstantiateException();
-                }
             }
             return (E) constructor.newInstance(typedArguments);
         } catch (Exception e) {
