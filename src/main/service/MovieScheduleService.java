@@ -20,6 +20,7 @@ public class MovieScheduleService {
     public void addMovieSchedule(String scheduleId, Movie movie, LocalDate localDate, LocalTime localTime, int roomNumber) {
         movieScheduleRepository.save(new MovieSchedule(scheduleId, movie, localDate, localTime, roomNumber));
     }
+    // MovieSchedule을 돌면서 주어진 Movie, RoomNumber에 해당하는
 
     public List<LocalTime> getMovieSchedules(String movieId, LocalDate localDate, Long roomNumber) {
         return movieScheduleRepository.findAll().stream().filter(movieSchedule -> Objects.equals(movieSchedule.getMovie().getId(), movieId))

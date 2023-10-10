@@ -10,14 +10,13 @@ public class Room extends Entity<String>{
     }
 
     public Room(Room room) {
-        super(null);
+        super(room.id);
         this.seats = new Seat[room.seats.length][room.seats[0].length];
         for(int i = 0; i < room.seats.length; i++) {
             for(int j = 0; j < room.seats[0].length; j++) {
                 this.seats[i][j] = new Seat(room.seats[i][j]);
             }
         }
-
     }
 
     public String toString(){
