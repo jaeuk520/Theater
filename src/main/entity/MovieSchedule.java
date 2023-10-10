@@ -14,12 +14,12 @@ public class MovieSchedule extends Entity<String> implements EntityValidator{
     private final LocalTime startAtTime;
     private final Room room;
 
-    public MovieSchedule(String id, Movie movie, LocalDate startAtDate, LocalTime startAtTime, int roomNumber) {
+    public MovieSchedule(String id, Movie movie, LocalDate startAtDate, LocalTime startAtTime, Long roomNumber) {
         super(id);
         this.movie = movie;
         this.startAtDate = startAtDate;
         this.startAtTime = startAtTime;
-        this.room = new Room((Room) DatabaseContext.getDatabase(Room.class).get(Integer.toString(roomNumber)));
+        this.room = new Room((Room) DatabaseContext.getDatabase(Room.class).get(Long.toString(roomNumber)));
     }
 
     public Movie getMovie() {

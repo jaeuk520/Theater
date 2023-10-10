@@ -2,6 +2,7 @@ package util;
 
 import entity.Movie;
 import entity.MovieSchedule;
+import entity.Room;
 import entity.Ticket;
 import literal.LiteralRegex;
 import literal.Literals;
@@ -18,6 +19,8 @@ import service.TicketService;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
@@ -137,8 +140,14 @@ public class Console {
 
         if (nextMenu == 1)
             addMovieMenu();
-        else if (nextMenu == 2) ;
-//            addMovieScheduleMenu(new MovieSchedule(null, movies.get(getPageNumber(page, Integer.parseInt(command))), LocalDate.now(), LocalTime.now(), null));
+        else if (nextMenu == 2) {
+            addMovieScheduleMenu(new MovieSchedule(
+                    null,
+                    movies.get(getPageNumber(page, Integer.parseInt(command)) - 1),
+                    LocalDate.now(),
+                    LocalTime.now(),
+                    1L));
+        }
     }
 
     /* 부 프롬프트 1.1: 영화 추가 */
@@ -169,14 +178,14 @@ public class Console {
         int nextMenu = 0;
         int page = 1;
         int totalPage = roomService.getTotalPages();
-        List<Long> rooms = roomService.getSortedRoomNumbers();
+        List<Room> rooms = roomService.getSortedRooms();
         String command = "";
 
         while (true) {
             command = "";
             StringBuilder sb = new StringBuilder("============== 일정추가 ==============\n");
             for (int i = (page - 1) * 5, idx = 1; idx <= 5 && i < rooms.size(); i++, idx++)
-                sb.append(idx).append(". ").append(Long.toString(rooms.get(i))).append("관\n");
+                sb.append(idx).append(". ").append(rooms.get(i).getRoomNumber()).append("관\n");
             sb.append(String.format("=========== 페이지 %d / %d ===========\n", page, totalPage));
             sb.append("7. 이전 페이지\n8. 다음 페이지\n0. 뒤로가기\n입력: ");
             printf(sb.toString());
@@ -228,6 +237,7 @@ public class Console {
         }
         if (nextMenu == -1)
             managementMenu();
+
         else if (nextMenu == 1)
             selectMovieDateMenu(movieSchedule);
     }
@@ -268,12 +278,18 @@ public class Console {
 
             break;
         }
-        selectMovieTimeMenu(movieSchedule);
+
+        selectMovieTimeMenu(new MovieSchedule(
+                    movieSchedule.getId(),
+                    movieSchedule.getMovie(),
+                    LocalDate.parse(command),
+                    movieSchedule.getLocalTime(),
+                    Long.parseLong(movieSchedule.getRoom().getRoomNumber())));
     }
 
     /* 부 프롬프트 1.4: 영화 시작 시각 입력 */
     private void selectMovieTimeMenu(MovieSchedule movieSchedule) {
-
+        
     }
 
     private void removeMovieMenu() {
@@ -399,8 +415,9 @@ public class Console {
     private boolean checkValidMovieNumber(List<Movie> movies, int page, int num) {
         return getPageNumber(page, num) <= movies.size();
     }
+    
+    private boolean checkValidRoomNumber(List<Room> rooms, int page, int num) {
 
-    private boolean checkValidRoomNumber(List<Long> rooms, int page, int num) {
         return getPageNumber(page, num) <= rooms.size();
     }
 }
