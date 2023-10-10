@@ -1,10 +1,10 @@
 package entity;
 
-public class Room extends Entity<Long>{
+public class Room extends Entity<String>{
 
     private final Seat[][] seats;
 
-    public Room(Long roomNumber, Seat[][] seats) {
+    public Room(String roomNumber, Seat[][] seats) {
         super(roomNumber);
         this.seats = seats;
     }
@@ -20,7 +20,7 @@ public class Room extends Entity<Long>{
         return sb.toString();
     }
 
-    public Long getRoomNumber() {
+    public String getRoomNumber() {
         return getId();
     }
 }

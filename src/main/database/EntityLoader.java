@@ -57,7 +57,7 @@ public class EntityLoader<E> {
                     );
                 }
             }
-            Room room = new Room(roomNumber++, seats);
+            Room room = new Room(Long.toString(roomNumber++), seats);
             data.put(Long.toString(roomNumber), room);
         }
     }

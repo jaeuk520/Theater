@@ -1,10 +1,10 @@
 package service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import entity.Room;
 import repository.RoomRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class RoomService {
     private final RoomRepository roomRepository;
@@ -29,7 +29,8 @@ public class RoomService {
         return roomRepository.findAll()
                 .stream()
                 .map(Room::getRoomNumber)
-                .sorted()
+                .map(Long::parseLong)
+                .sorted(Long::compareTo)
                 .collect(Collectors.toList());
     }
 }

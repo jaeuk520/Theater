@@ -17,7 +17,7 @@ public class NumericIdEntityDatabase<E> extends EntityDatabase<E>{
 
     @Override
     public boolean save(E entity) {
-        data.put(String.valueOf(++lastId), entity);
+        data.put(Long.toString(++lastId), entity);
         setId(entity, Long.toString(lastId));
         return true;
     }
