@@ -12,7 +12,7 @@ public class TicketService {
 
     public void addReservation(MovieSchedule movieSchedule, String seatId){
 
-        ticketRepository.save(new Ticket(movieSchedule, seatId));
+        ticketRepository.save(new Ticket(null, movieSchedule, seatId));
     }
 
     public void cancelReservation(String id){

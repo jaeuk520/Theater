@@ -1,6 +1,9 @@
 package entity;
 
-public class Room extends Entity<String>{
+import database.DatabaseContext;
+import exception.EntityInstantiateException;
+
+public class Room extends Entity<String> implements EntityValidator{
 
     private final Seat[][] seats;
 
@@ -32,5 +35,13 @@ public class Room extends Entity<String>{
 
     public String getRoomNumber() {
         return getId();
+    }
+
+    @Override
+    public void validate() {
+        // <영화상영관번호> 1이상, 현재 영화관의 상영관 개수 이하
+        if(Integer.parseInt(getRoomNumber()) < 1 || Integer.parseInt(getRoomNumber()) > DatabaseContext.getDatabase(Room.class).size()) {
+            throw new EntityInstantiateException();
+        }
     }
 }

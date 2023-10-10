@@ -134,13 +134,13 @@ public class Console {
             if (nextMenu != 0)
                 break;
         }
-        
-        if (nextMenu == 1) 
+
+        if (nextMenu == 1)
             addMovieMenu();
         else if (nextMenu == 2) ;
 //            addMovieScheduleMenu(new MovieSchedule(null, movies.get(getPageNumber(page, Integer.parseInt(command))), LocalDate.now(), LocalTime.now(), null));
     }
-        
+
     /* 부 프롬프트 1.1: 영화 추가 */
     private void addMovieMenu() {
         while (true) {
@@ -226,9 +226,9 @@ public class Console {
             if (nextMenu != 0)
                 break;
         }
-        if (nextMenu == -1) 
+        if (nextMenu == -1)
             managementMenu();
-        else if (nextMenu == 1) 
+        else if (nextMenu == 1)
             selectMovieDateMenu(movieSchedule);
     }
 
@@ -270,7 +270,7 @@ public class Console {
         }
         selectMovieTimeMenu(movieSchedule);
     }
-    
+
     /* 부 프롬프트 1.4: 영화 시작 시각 입력 */
     private void selectMovieTimeMenu(MovieSchedule movieSchedule) {
 
@@ -355,7 +355,7 @@ public class Console {
     }
     /* 부 프롬프트 2.5: 예매 코드 출력 */
     private void printReservationCodeMenu(Ticket ticket) {
-        
+
     }
     /* 부 프롬프트 3: 예매 취소 */
     private void cancelReservationMenu() {
@@ -391,7 +391,7 @@ public class Console {
         System.err.flush();
         System.out.flush();
     }
-    
+
     private int getPageNumber(int page, int num) {
         return (page - 1) * 5 + num;
     }
@@ -399,7 +399,7 @@ public class Console {
     private boolean checkValidMovieNumber(List<Movie> movies, int page, int num) {
         return getPageNumber(page, num) <= movies.size();
     }
-    
+
     private boolean checkValidRoomNumber(List<Long> rooms, int page, int num) {
         return getPageNumber(page, num) <= rooms.size();
     }
