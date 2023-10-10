@@ -22,7 +22,7 @@ public class RoomTest {
             }
         }
         long roomNumber = 1;
-        Room room = new Room(roomNumber, seats);
+        Room room = new Room(Long.toString(roomNumber), seats);
         String[] actual = room.toString().split("\n");
         System.out.println(Arrays.toString(actual));
         assertThat(actual).hasSize(row + 1);
