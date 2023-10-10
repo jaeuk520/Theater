@@ -1,7 +1,11 @@
 package util;
 
+import entity.Movie;
+import entity.MovieSchedule;
+import entity.Ticket;
 import literal.LiteralRegex;
 import literal.Literals;
+import literal.Path;
 import repository.MovieRepository;
 import repository.MovieScheduleRepository;
 import repository.RoomRepository;
@@ -18,13 +22,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
-import entity.Movie;
-import entity.MovieSchedule;
-import entity.Room;
-import entity.Ticket;
 
 
 public class Console {
@@ -37,10 +34,10 @@ public class Console {
 
     public Console() {
         input = new Input(System.in, LiteralRegex.CONSOLE_DELIMITER);
-        roomService = new RoomService(new RoomRepository());
-        movieService = new MovieService(new MovieRepository());
-        movieScheduleService = new MovieScheduleService(new MovieScheduleRepository());
-        ticketService = new TicketService(new TicketRepository());
+        roomService = new RoomService(new RoomRepository(Path.THEATER_DATA));
+        movieService = new MovieService(new MovieRepository(Path.MOVIE_DATA));
+        movieScheduleService = new MovieScheduleService(new MovieScheduleRepository(Path.SCHEDULE_DATA));
+        ticketService = new TicketService(new TicketRepository(Path.RESERVATION_DATA));
     }
 
     public int mainMenu() {

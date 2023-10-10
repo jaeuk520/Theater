@@ -2,11 +2,10 @@ package repository;
 
 import database.StringIdEntityDatabase;
 import entity.Ticket;
-import literal.Path;
 
 public class TicketRepository extends StringIdEntityDatabase<Ticket> {
 
-    public TicketRepository() {
-        super(Ticket.class, 6, Path.RESERVATION_DATA);
+    public TicketRepository(String path) {
+        super(Ticket.class, 6, path);
     }
 }

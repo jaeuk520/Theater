@@ -13,10 +13,10 @@ import java.time.LocalTime;
 import java.util.List;
 
 public class TicketServiceTest {
-    private final TicketRepository ticketRepository = new TicketRepository();
+    private final TicketRepository ticketRepository = new TicketRepository("test_ticket.txt");
     private final TicketService ticketService = new TicketService(ticketRepository);
-    private final RoomRepository roomRepository = new RoomRepository();
-    private final MovieScheduleRepository movieScheduleRepository = new MovieScheduleRepository();
+    private final RoomRepository roomRepository = new RoomRepository("test_theater.txt");
+    private final MovieScheduleRepository movieScheduleRepository = new MovieScheduleRepository("test_schedule.txt");
     @Test
     @DisplayName("영화 예매 및 취소하기.")
     public void addReservationTest(){
