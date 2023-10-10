@@ -18,8 +18,6 @@ import service.TicketService;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
@@ -139,8 +137,8 @@ public class Console {
         
         if (nextMenu == 1) 
             addMovieMenu();
-        else if (nextMenu == 2) 
-            addMovieScheduleMenu(new MovieSchedule(null, movies.get(getPageNumber(page, Integer.parseInt(command))), LocalDate.now(), LocalTime.now(), null));
+        else if (nextMenu == 2) ;
+//            addMovieScheduleMenu(new MovieSchedule(null, movies.get(getPageNumber(page, Integer.parseInt(command))), LocalDate.now(), LocalTime.now(), null));
     }
         
     /* 부 프롬프트 1.1: 영화 추가 */

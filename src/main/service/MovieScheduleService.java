@@ -2,7 +2,6 @@ package service;
 
 import entity.Movie;
 import entity.MovieSchedule;
-import entity.Room;
 import repository.MovieScheduleRepository;
 
 import java.time.LocalDate;
@@ -18,8 +17,8 @@ public class MovieScheduleService {
         this.movieScheduleRepository = movieScheduleRepository;
     }
 
-    public void addMovieSchedule(String scheduleId, Movie movie, LocalDate localDate, LocalTime localTime, Room room) {
-        movieScheduleRepository.save(new MovieSchedule(scheduleId, movie, localDate, localTime, room));
+    public void addMovieSchedule(String scheduleId, Movie movie, LocalDate localDate, LocalTime localTime, int roomNumber) {
+        movieScheduleRepository.save(new MovieSchedule(scheduleId, movie, localDate, localTime, roomNumber));
     }
 
     public List<LocalTime> getMovieSchedules(String movieId, LocalDate localDate, Long roomNumber) {

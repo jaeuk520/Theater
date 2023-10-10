@@ -39,7 +39,8 @@ public class EntityLoader<E> {
 
     public void loadTheater(HashMap<String, Room> data) {
         long roomNumber = 1L;
-        while(input.hasNext()) {
+        int totalTheaters = Integer.parseInt(input.readLine());
+        for(int t = 0; t < totalTheaters; t++) {
             List<Integer> rowCol = Arrays.stream(input.getByPattern("\\d\\ \\d")
                     .split(" "))
                     .map(Integer::parseInt)
@@ -57,8 +58,9 @@ public class EntityLoader<E> {
                     );
                 }
             }
-            Room room = new Room(Long.toString(roomNumber++), seats);
+            Room room = new Room(Long.toString(roomNumber), seats);
             data.put(Long.toString(roomNumber), room);
+            roomNumber++;
         }
     }
 }

@@ -1,14 +1,21 @@
 package entity;
 
-public class Seat extends Entity<String>{
+public class Seat {
 
+    private String seatId;
     private Boolean isAvailable;
     private Boolean isReserved;
 
     public Seat(String id, boolean isAvailable, boolean isReserved) {
-        super(id);
+        this.seatId = id;
         this.isAvailable = isAvailable;
         this.isReserved = isReserved;
+    }
+
+    public Seat(Seat seat) {
+        this.seatId = seat.seatId;
+        this.isReserved = seat.isReserved;
+        this.isAvailable = seat.isAvailable;
     }
 
     public boolean isAvailable() {

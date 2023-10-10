@@ -24,7 +24,8 @@ public class TicketServiceTest {
         Movie movie = new Movie(null, "파이트클럽", 200);
 
         // Seat 객체 생성
-        Seat[][] seats = new Seat[0][];
+        Seat[][] seats = new Seat[10][10];
+        for(int i = 0; i < 10; i++) for(int j = 0; j < 10; j++) seats[i][j] = new Seat("", true, false);
 
         // Room 객체 생성
         Room room = new Room(null, seats);
@@ -33,7 +34,7 @@ public class TicketServiceTest {
         // MovieSchedule 객체 생성
         LocalDate startDate = LocalDate.of(2023, 10, 15);
         LocalTime startTime = LocalTime.of(18, 30);
-        MovieSchedule movieSchedule = new MovieSchedule(null, movie, startDate, startTime, room);
+        MovieSchedule movieSchedule = new MovieSchedule(null, movie, startDate, startTime, 1);
         movieScheduleRepository.save(movieSchedule);
 
         ticketService.addReservation(movieSchedule, "A01");
