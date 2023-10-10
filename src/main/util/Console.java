@@ -14,9 +14,16 @@ import service.TicketService;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
+import entity.Movie;
+import entity.MovieSchedule;
+import entity.Room;
 import entity.Ticket;
 
 
@@ -70,16 +77,17 @@ public class Console {
 
     /* 부 프롬프트 1: 영화 관리 */
     private void managementMenu() {
+        int nextMenu = 0;
         int page = 1;
         int totalPage = movieService.getTotalPages();
-        List<String> movies = movieService.getSortedMovieNames();
+        List<Movie> movies = movieService.getSortedMovies();
+        String command = "";
 
         while (true) {
-            String command = "";
-
+            command = "";
             StringBuilder sb = new StringBuilder("============== 영화관리 ==============\n");
             for (int i = (page - 1) * 5, idx = 1; idx <= 5 && i < movies.size(); i++, idx++)
-                sb.append(idx).append(". ").append(movies.get(i)).append("\n");
+                sb.append(idx).append(". ").append(movies.get(i).getName()).append("\n");
             sb.append(String.format("=========== 페이지 %d / %d ===========\n", page, totalPage));
             sb.append("7. 이전 페이지\n8. 다음 페이지\n9. 영화 추가\n0. 뒤로가기\n입력: ");
             printf(sb.toString());
@@ -99,9 +107,8 @@ public class Console {
                     if (!checkValidMovieNumber(movies, page, num)) {
                         printError("해당 영화가 존재하지 않습니다. 다시 입력해 주세요.");
                         continue;
-                    } 
-                    else
-                        addMovieScheduleMenu();
+                    } else
+                        nextMenu = 2;
                     break;
                 }
 
@@ -122,15 +129,21 @@ public class Console {
                 }
 
                 case Literals.ADD_MOVIE: {
-                    addMovieMenu();
-                    movies = movieService.getSortedMovieNames();
-                    totalPage = movieService.getTotalPages();
+                    nextMenu = 1;
                     break;
                 }
                 case Literals.BACK:
                     return;
             }
+
+            if (nextMenu != 0)
+                break;
         }
+        
+        if (nextMenu == 1) 
+            addMovieMenu();
+        else if (nextMenu == 2) 
+            addMovieScheduleMenu(new MovieSchedule(null, movies.get(getPageNumber(page, Integer.parseInt(command))), LocalDate.now(), LocalTime.now(), null));
     }
         
     /* 부 프롬프트 1.1: 영화 추가 */
@@ -153,16 +166,19 @@ public class Console {
             println("영화를 저장했습니다.");
             break;
         }
+        managementMenu();
     }
 
     /* 부 프롬프트 1.2: 영화 상영 일정 추가 */
-    private void addMovieScheduleMenu() {
+    private void addMovieScheduleMenu(MovieSchedule movieSchedule) {
+        int nextMenu = 0;
         int page = 1;
         int totalPage = roomService.getTotalPages();
         List<Long> rooms = roomService.getSortedRoomNumbers();
+        String command = "";
 
         while (true) {
-            String command = "";
+            command = "";
             StringBuilder sb = new StringBuilder("============== 일정추가 ==============\n");
             for (int i = (page - 1) * 5, idx = 1; idx <= 5 && i < rooms.size(); i++, idx++)
                 sb.append(idx).append(". ").append(Long.toString(rooms.get(i))).append("관\n");
@@ -186,7 +202,7 @@ public class Console {
                         printError("해당 관이 존재하지 않습니다. 다시 입력해 주세요.");
                         continue;
                     } else
-                        selectMovieDateMenu();
+                        nextMenu = 1;
                     break;
                 }
 
@@ -206,16 +222,26 @@ public class Console {
                     break;
                 }
 
-                case Literals.BACK:
-                    return;
+                case Literals.BACK: {
+                    nextMenu = -1;
+                    break;
+                }
             }
+
+            if (nextMenu != 0)
+                break;
         }
+        if (nextMenu == -1) 
+            managementMenu();
+        else if (nextMenu == 1) 
+            selectMovieDateMenu(movieSchedule);
     }
 
     /* 부 프롬프트 1.3: 영화 상영일 선택 */
-    private void selectMovieDateMenu() {
+    private void selectMovieDateMenu(MovieSchedule movieSchedule) {
+        String command = "";
         while (true) {
-            String command = "";
+            command = "";
             printf("============== 일정추가 ==============\n" +
                     "입력 (YYYY-MM-DD 형식): ");
             if ((command = input.getByPattern(LiteralRegex.MOVIE_DATE)) == null) {
@@ -245,13 +271,13 @@ public class Console {
                 continue;
             }
 
-            selectMovieTimeMenu(command);
             break;
         }
+        selectMovieTimeMenu(movieSchedule);
     }
     
     /* 부 프롬프트 1.4: 영화 시작 시각 입력 */
-    private void selectMovieTimeMenu(String date) {
+    private void selectMovieTimeMenu(MovieSchedule movieSchedule) {
 
     }
 
@@ -263,14 +289,14 @@ public class Console {
     private void reservationMenu() {
         int page = 1;
         int totalPage = movieService.getTotalPages();
-        List<String> movies = movieService.getSortedMovieNames();
+        List<Movie> movies = movieService.getSortedMovies();
 
         while (true) {
             String command = "";
 
             StringBuilder sb = new StringBuilder("============== 영화예매 ==============\n");
             for (int i = (page - 1) * 5, idx = 1; idx <= 5 && i < movies.size(); i++, idx++)
-                sb.append(idx).append(". ").append(movies.get(i)).append("\n");
+                sb.append(idx).append(". ").append(movies.get(i).getName()).append("\n");
             sb.append(String.format("=========== 페이지 %d / %d ===========\n", page, totalPage));
             sb.append("7. 이전 페이지\n8. 다음 페이지\n0. 뒤로가기\n입력: ");
             printf(sb.toString());
@@ -366,16 +392,20 @@ public class Console {
         flush();
     }
 
-    private void flush(){
+    private void flush() {
         System.err.flush();
         System.out.flush();
     }
+    
+    private int getPageNumber(int page, int num) {
+        return (page - 1) * 5 + num;
+    }
 
-    private boolean checkValidMovieNumber(List<String> movies, int page, int num) {
-        return (page - 1) * 5 + num <= movies.size();
+    private boolean checkValidMovieNumber(List<Movie> movies, int page, int num) {
+        return getPageNumber(page, num) <= movies.size();
     }
     
     private boolean checkValidRoomNumber(List<Long> rooms, int page, int num) {
-        return (page - 1) * 5 + num <= rooms.size();
+        return getPageNumber(page, num) <= rooms.size();
     }
 }
