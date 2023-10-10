@@ -1,29 +1,36 @@
 package entity;
 
+import database.DatabaseContext;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class MovieSchedule extends Entity<String> {
 
     private final Movie movie;
-    private final LocalDateTime startAt;
+    private final LocalDate startAtDate;
+    private final LocalTime startAtTime;
     private final Room room;
 
-    public MovieSchedule(String id, Movie movie, LocalDate startAtDate, LocalTime startAtTime, Room room) {
+    public MovieSchedule(String id, Movie movie, LocalDate startAtDate, LocalTime startAtTime, int roomNumber) {
         super(id);
         this.movie = movie;
-        this.startAt = LocalDateTime.of(startAtDate, startAtTime);
-        this.room = room;
+        this.startAtDate = startAtDate;
+        this.startAtTime = startAtTime;
+        this.room = new Room((Room) DatabaseContext.getDatabase(Room.class).get(Integer.toString(roomNumber)));
     }
 
     public Movie getMovie() {
         return movie;
     }
 
-    public LocalDateTime getStartAt() {
-        return startAt;
+    public LocalTime getLocalTime() {
+        return startAtTime;
+    }
+
+    public LocalDate getLocalDate() {
+        return startAtDate;
     }
 
     public Room getRoom() {
@@ -33,8 +40,8 @@ public class MovieSchedule extends Entity<String> {
     @Override
     public String toString() {
         return movie.getId() + "$" +
-                startAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "$" +
-                startAt.format(DateTimeFormatter.ofPattern("hh:mm")) + "$" +
+                startAtDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "$" +
+                startAtTime.format(DateTimeFormatter.ofPattern("hh:mm")) + "$" +
                 room.getRoomNumber() + '\n';
     }
 }

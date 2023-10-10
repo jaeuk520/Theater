@@ -1,5 +1,8 @@
 package database;
 
+import exception.EntityInstantiateException;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +49,16 @@ public abstract class EntityDatabase<E> {
     public Optional<E> findById(String id) {
         if (!data.containsKey(id)) return Optional.empty();
         return Optional.of(data.get(id));
+    }
+
+    protected void setId(E entity, String id) {
+        try {
+            Field idField = entity.getClass().getSuperclass().getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(entity, id);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new EntityInstantiateException();
+        }
     }
 
     /**

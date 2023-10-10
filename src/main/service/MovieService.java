@@ -3,6 +3,7 @@ package service;
 import entity.Movie;
 import repository.MovieRepository;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,13 @@ public class MovieService {
                 .stream()
                 .map(Movie::getName)
                 .sorted()
+                .collect(Collectors.toList());
+    }
+
+    public List<Movie> getSortedMovies() {
+        return movieRepository.findAll()
+                .stream()
+                .sorted(Comparator.comparing(Movie::getName))
                 .collect(Collectors.toList());
     }
 

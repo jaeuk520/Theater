@@ -11,7 +11,7 @@ import java.util.Optional;
 
 class MovieServiceTest {
 
-    private final MovieRepository movieRepository = new MovieRepository();
+    private final MovieRepository movieRepository = new MovieRepository("test_movie.txt");
     private final MovieService movieService = new MovieService(movieRepository);
     @Test
     @DisplayName("영화가 성공적으로 저장된다.")
@@ -22,5 +22,9 @@ class MovieServiceTest {
         Assertions.assertThat(actual.get().getRunningTime()).isEqualTo(180);
         System.out.println(actual.get().getId());
     }
+<<<<<<< HEAD
 
 }
+=======
+}
+>>>>>>> a55e061bda60c3bc8c3310072ea0c83c1a769e32

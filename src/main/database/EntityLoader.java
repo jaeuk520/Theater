@@ -106,8 +106,13 @@ public class EntityLoader<E> {
 
     public void loadTheater(HashMap<String, Room> data) {
         long roomNumber = 1L;
+<<<<<<< HEAD
         Long roomMax = Long.parseLong(input.readLine());
         while(input.hasNext()) {
+=======
+        int totalTheaters = Integer.parseInt(input.readLine());
+        for(int t = 0; t < totalTheaters; t++) {
+>>>>>>> a55e061bda60c3bc8c3310072ea0c83c1a769e32
             List<Integer> rowCol = Arrays.stream(input.getByPattern("\\d\\ \\d")
                     .split(" "))
                     .map(Integer::parseInt)
@@ -125,11 +130,17 @@ public class EntityLoader<E> {
                     );
                 }
             }
+<<<<<<< HEAD
             Room room = new Room(roomNumber, seats);
             data.put(Long.toString(roomNumber++), room);
         }
         if(roomNumber != roomMax + 1) {
             throw new EntityInstantiateException();
+=======
+            Room room = new Room(Long.toString(roomNumber), seats);
+            data.put(Long.toString(roomNumber), room);
+            roomNumber++;
+>>>>>>> a55e061bda60c3bc8c3310072ea0c83c1a769e32
         }
     }
 }

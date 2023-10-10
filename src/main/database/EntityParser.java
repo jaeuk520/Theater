@@ -1,10 +1,13 @@
 package database;
 
+<<<<<<< HEAD
 import entity.Entity;
 import exception.EntityInstantiateException;
 import exception.IllegalPropertyParseException;
 
 import java.lang.reflect.InvocationTargetException;
+=======
+>>>>>>> a55e061bda60c3bc8c3310072ea0c83c1a769e32
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,6 +26,7 @@ public class EntityParser {
         }
     }
 
+<<<<<<< HEAD
     public static <T> T resolve(Class<?> entityType, String data) {
         Method method = map.get(entityType);
 
@@ -40,6 +44,8 @@ public class EntityParser {
         }
     }
 
+=======
+>>>>>>> a55e061bda60c3bc8c3310072ea0c83c1a769e32
     public static int parseInt(String data) {
         return Integer.parseInt(data);
     }
