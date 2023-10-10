@@ -48,6 +48,7 @@ public class EntityLoader<E> {
             if(type.getName().equals("entity.MovieSchedule")) {
                 //상영 스케줄 데이터 파일 검사
                 validateRoomIndex(Integer.parseInt(attr[4]));
+                validateMovieStartTime(attr[3]);
                 validateCodeDuplication(data, attr[0]);
                 validateMovieScheduleDuplication();
             }
@@ -56,6 +57,14 @@ public class EntityLoader<E> {
                 validateSeatDuplication(data, attr[1], attr[2]);
             }
             data.put(attr[0], EntityFactory.createEntity(type, attr));
+        }
+    }
+
+    private void validateMovieStartTime(String localTime) {
+        //영화 시작 시간이 0분 혹은 30분인지 확인
+        LocalTime startTime = LocalTime.parse(localTime);
+        if(startTime.getMinute() % 30 != 0) {
+            throw new EntityInstantiateException();
         }
     }
 
