@@ -2,10 +2,12 @@ package service;
 
 import entity.Movie;
 import entity.MovieSchedule;
+import entity.Room;
 import repository.MovieScheduleRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -42,5 +44,29 @@ public class MovieScheduleService {
                 .map(MovieSchedule::getLocalTime)
                 .sorted()
                 .collect(Collectors.toList());
+    }
+
+
+    //MovieSchedule을 돌면서 주어진 Movie, 날짜에 해당하는 상영관 번호 리턴
+    public List<Room> getTheaterByMovieAndDate(Movie movie, LocalDate date){
+        List<MovieSchedule> movieSchedules = movieScheduleRepository.findAll();
+        List<Room> result = new ArrayList<>();
+        for(MovieSchedule movieSchedule : movieSchedules){
+            if(movieSchedule.getMovie() == movie && movieSchedule.getLocalDate() == date) result.add(movieSchedule.getRoom());
+        }
+        return result;
+    }
+
+    //영화 정보, 관, 시작 시각이 주어졌을 때, 해당 스케줄의 Room 리턴
+    public Room getRoomByMovieDateTheaterNo(Movie movie, LocalDate date, String roomNumber) {
+        List<MovieSchedule> movieSchedules = movieScheduleRepository.findAll();
+        for (MovieSchedule movieSchedule : movieSchedules) {
+            if (movieSchedule.getMovie().equals(movie) &&
+                    movieSchedule.getLocalDate().equals(date) &&
+                    movieSchedule.getRoom().getRoomNumber().equals(roomNumber)) {
+                return movieSchedule.getRoom();
+            }
+        }
+        return null; // 원하는 Room이 없을 경우 null을 반환
     }
 }
