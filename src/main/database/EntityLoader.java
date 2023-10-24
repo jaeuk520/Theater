@@ -103,7 +103,7 @@ public class EntityLoader<E> {
 
     private static <E> void validateMovieDuplication(HashMap<String,E> data, String movieId, String movieName) {
         data.forEach((key, value) -> {
-            if(movieId.equals(key) || movieName.equals((value.toString().split("\\$"))[2].replaceAll("\n", ""))) {
+            if(movieId.equals(key)) {
                 throw new EntityInstantiateException();
             }
         });
