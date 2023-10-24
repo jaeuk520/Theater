@@ -2,7 +2,7 @@ package database;
 
 import entity.*;
 import exception.EntityInstantiateException;
-import javafx.util.Pair;
+// import javafx.util.Pair;
 import literal.LiteralRegex;
 import util.Input;
 
