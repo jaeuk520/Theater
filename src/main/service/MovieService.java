@@ -26,14 +26,6 @@ public class MovieService {
         return (page - 1) >= 1;
     }
 
-    public List<String> getSortedMovieNames() {
-        return movieRepository.findAll()
-                .stream()
-                .map(Movie::getName)
-                .sorted()
-                .collect(Collectors.toList());
-    }
-
     public List<Movie> getSortedMovies() {
         return movieRepository.findAll()
                 .stream()

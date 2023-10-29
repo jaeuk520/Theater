@@ -23,34 +23,15 @@ public class MovieScheduleService {
         movieScheduleRepository.save(new MovieSchedule(scheduleId, movie, localDate, localTime, roomNumber));
     }
 
-    public int getTotalPages(int sz) {
-        return sz / 5 + (sz % 5 != 0 ? 1 : 0);
-    }
-
-    public boolean hasNextPage(int page, int totalPage) {
-        return (page + 1) <= totalPage;
-    }
-
-    public boolean hasPreviousPage(int page) {
-        return (page - 1) >= 1;
-    }
-
     // MovieSchedule을 돌면서 주어진 Movie, RoomNumber에 해당하는
 
-    public List<LocalTime> getSortedMovieSchedules(Movie movie, LocalDate localDate, Long roomNumber) {
-        return movieScheduleRepository.findAll().stream()
-                .filter(movieSchedule -> Objects.equals(movieSchedule.getMovie().getId(), movie.getId()))
-                .filter(movieSchedule -> Objects.equals(movieSchedule.getLocalDate(), localDate))
-                .filter(movieSchedule -> Objects.equals(Long.parseLong(movieSchedule.getRoom().getRoomNumber()),
-                        roomNumber))
-                .map(MovieSchedule::getLocalTime)
-                .sorted()
-                .collect(Collectors.toList());
+    public List<LocalTime> getMovieStartAtTimeByDateAndRoomNumber(String movieId, LocalDate localDate, Long roomNumber) {
+        return movieScheduleRepository.findAllMoviesStartAtTimeByDateAndRoomNumber(movieId, localDate, roomNumber);
     }
 
-    public List<Movie> getMovies(LocalDate localDate, Long roomNumber) {
+    public List<Movie> getDistinctMoviesByStartDateAtAndRoomNumber(LocalDate startDateAt, Long roomNumber) {
         return movieScheduleRepository.findAll().stream()
-                .filter(movieSchedule -> Objects.equals(movieSchedule.getLocalDate(), localDate))
+                .filter(movieSchedule -> Objects.equals(movieSchedule.getStartAtDate(), startDateAt))
                 .filter(movieSchedule -> Objects.equals(Long.parseLong(movieSchedule.getRoom().getRoomNumber()),
                         roomNumber))
                 .map(MovieSchedule::getMovie)
@@ -59,8 +40,8 @@ public class MovieScheduleService {
     }
 
     public Boolean[] getMovieStartTimes(Movie movie, LocalDate localDate, Long roomNumber) {
-        List<LocalTime> startTimes = getSortedMovieSchedules(movie, localDate, roomNumber);
-        List<LocalTime> startTimesOfLastDay = getSortedMovieSchedules(movie, localDate.minusDays(1), roomNumber);
+        List<LocalTime> startTimes = getMovieStartAtTimeByDateAndRoomNumber(movie.getId(), localDate, roomNumber);
+        List<LocalTime> startTimesOfLastDay = getMovieStartAtTimeByDateAndRoomNumber(movie.getId(), localDate.minusDays(1), roomNumber);
         Boolean[] isChecked = new Boolean[48];
 
         for (int i = 0; i < 48; i++)
@@ -102,7 +83,7 @@ public class MovieScheduleService {
         List<MovieSchedule> movieSchedules = movieScheduleRepository.findAll();
         List<Room> result = new ArrayList<>();
         for(MovieSchedule movieSchedule : movieSchedules){
-            if(movieSchedule.getMovie() == movie && movieSchedule.getLocalDate() == date) result.add(movieSchedule.getRoom());
+            if(movieSchedule.getMovie() == movie && movieSchedule.getStartAtDate() == date) result.add(movieSchedule.getRoom());
         }
         return result;
     }
@@ -112,7 +93,7 @@ public class MovieScheduleService {
         List<MovieSchedule> movieSchedules = movieScheduleRepository.findAll();
         for (MovieSchedule movieSchedule : movieSchedules) {
             if (movieSchedule.getMovie().equals(movie) &&
-                    movieSchedule.getLocalDate().equals(date) &&
+                    movieSchedule.getStartAtDate().equals(date) &&
                     movieSchedule.getRoom().getRoomNumber().equals(roomNumber)) {
                 return movieSchedule.getRoom();
             }

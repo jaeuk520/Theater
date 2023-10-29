@@ -1,15 +1,19 @@
 package database;
 
-import entity.*;
+import entity.MovieSchedule;
+import entity.Room;
+import entity.Seat;
+import entity.Ticket;
 import exception.EntityInstantiateException;
-// import javafx.util.Pair;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 import literal.LiteralRegex;
 import util.Input;
-
-import java.time.LocalTime;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class EntityLoader<E> {
 
@@ -77,8 +81,8 @@ public class EntityLoader<E> {
 
         data.forEach((key, value) -> {
             int runningTime = (((MovieSchedule)value).getMovie()).getRunningTime();
-            String startAtDate = ((MovieSchedule)value).getLocalDate().toString();
-            String startAtTime = ((MovieSchedule)value).getLocalTime().toString();
+            String startAtDate = ((MovieSchedule)value).getStartAtDate().toString();
+            String startAtTime = ((MovieSchedule)value).getStartAtTime().toString();
             String roomNumber = ((MovieSchedule)value).getRoom().getRoomNumber();
             schedules.add(startAtTime + "$" + startAtDate + "$" + runningTime + "$" + roomNumber);
         });
