@@ -30,14 +30,14 @@ public abstract class EntityDatabase<E> {
     /**
      * 메모리 데이터베이스에 entity를 저장합니다.
      * @param entity 저장할 엔티티입니다.
-     * @return 저장에 성공했다면 true를, 실패했다면 false를 리턴합니다.
+     * @return 저장에 성공했다면 ID를, 실패했다면 null을 리턴합니다.
      */
-    public abstract boolean save(E entity);
+    public abstract String save(E entity);
 
-    public boolean save(E entity, String id) {
-        if (data.containsKey(id)) return false;
+    public String save(E entity, String id) {
+        if (data.containsKey(id)) return null;
         data.put(id, entity);
-        return true;
+        return id;
     }
 
     public boolean delete(String id) {

@@ -18,7 +18,7 @@ public class StringIdEntityDatabase<E> extends EntityDatabase<E>{
     }
 
     @Override
-    public boolean save(E entity) {
+    public String save(E entity) {
         String id;
         do {
             id = UUID.randomUUID().toString().substring(0, UUIDLength).toUpperCase();
@@ -28,6 +28,6 @@ public class StringIdEntityDatabase<E> extends EntityDatabase<E>{
         setId(entity, id);
 
         data.put(id, entity);
-        return true;
+        return id;
     }
 }

@@ -26,11 +26,11 @@ public class MovieSchedule extends Entity<String> implements EntityValidator{
         return movie;
     }
 
-    public LocalTime getLocalTime() {
+    public LocalTime getStartAtTime() {
         return startAtTime;
     }
 
-    public LocalDate getLocalDate() {
+    public LocalDate getStartAtDate() {
         return startAtDate;
     }
 

@@ -1,11 +1,9 @@
 package service;
 
 import entity.Room;
-import repository.RoomRepository;
-
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import repository.RoomRepository;
 
 public class RoomService {
     private final RoomRepository roomRepository;
@@ -24,15 +22,6 @@ public class RoomService {
 
     public boolean hasPreviousPage(int page) {
         return (page - 1) >= 1;
-    }
-
-    public List<Long> getSortedRoomNumbers() {
-        return roomRepository.findAll()
-                .stream()
-                .map(Room::getRoomNumber)
-                .map(Long::parseLong)
-                .sorted(Long::compareTo)
-                .collect(Collectors.toList());
     }
 
     public List<Room> getSortedRooms() {

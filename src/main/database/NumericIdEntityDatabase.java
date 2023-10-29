@@ -16,10 +16,11 @@ public class NumericIdEntityDatabase<E> extends EntityDatabase<E>{
     }
 
     @Override
-    public boolean save(E entity) {
-        data.put(Long.toString(++lastId), entity);
+    public String save(E entity) {
+        String id = Long.toString(++lastId);
+        data.put(id, entity);
         setId(entity, Long.toString(lastId));
-        return true;
+        return id;
     }
 
 }
