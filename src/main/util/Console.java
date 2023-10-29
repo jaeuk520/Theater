@@ -245,8 +245,8 @@ public class Console {
             selectMovieDateMenu(new MovieSchedule(
                     movieSchedule.getId(),
                     movieSchedule.getMovie(),
-                    movieSchedule.getLocalDate(),
-                    movieSchedule.getLocalTime(),
+                    movieSchedule.getStartAtDate(),
+                    movieSchedule.getStartAtTime(),
                     Long.parseLong(rooms.get(getPageNumber(page, Integer.parseInt(command)) - 1).getRoomNumber())));
         }
     }
@@ -287,15 +287,15 @@ public class Console {
                     movieSchedule.getId(),
                     movieSchedule.getMovie(),
                     LocalDate.parse(command),
-                    movieSchedule.getLocalTime(),
+                    movieSchedule.getStartAtTime(),
                     Long.parseLong(movieSchedule.getRoom().getRoomNumber())));
     }
 
     /* 부 프롬프트 1.4: 영화 시작 시각 입력 */
     private void selectMovieTimeMenu(MovieSchedule movieSchedule) {
         String command = "";
-        List<Movie> movies = movieScheduleService.getMovies(
-                movieSchedule.getLocalDate(),
+        List<Movie> movies = movieScheduleService.getDistinctMoviesByStartDateAtAndRoomNumber(
+                movieSchedule.getStartAtDate(),
                 Long.parseLong(movieSchedule.getRoom().getRoomNumber()));
 
         Boolean startTimes[] = new Boolean[48], startTimesOfNextDay[] = new Boolean[48];
@@ -305,12 +305,12 @@ public class Console {
         for (Movie movie : movies) {
             Boolean startTimesTemp[] = movieScheduleService.getMovieStartTimes(
                     movie,
-                    movieSchedule.getLocalDate(),
+                    movieSchedule.getStartAtDate(),
                     Long.parseLong(movieSchedule.getRoom().getRoomNumber()));
 
             Boolean startTimesOfNextDayTemp[] = movieScheduleService.getMovieStartTimes(
                     movie,
-                    movieSchedule.getLocalDate().plusDays(1),
+                    movieSchedule.getStartAtDate().plusDays(1),
                     Long.parseLong(movieSchedule.getRoom().getRoomNumber()));
 
             for (int i = 0; i < 48; i++) {
@@ -321,7 +321,7 @@ public class Console {
         
         while (true) {
             StringBuilder sb = new StringBuilder(String.format(
-                    "============== %s 상영 시각 추가 ==============\n", movieSchedule.getLocalDate()));
+                    "============== %s 상영 시각 추가 ==============\n", movieSchedule.getStartAtDate()));
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 12; j++) {
                     sb.append(i * 12 + j < 10 ? "0" : "").append(i * 12 + j).append("    ");
@@ -342,7 +342,7 @@ public class Console {
 
             // 과거의 시간인지
             LocalDateTime curDateTime = systemTime;
-            LocalDateTime inpDateTime = LocalDateTime.of(movieSchedule.getLocalDate(), LocalTime.parse(command));
+            LocalDateTime inpDateTime = LocalDateTime.of(movieSchedule.getStartAtDate(), LocalTime.parse(command));
             if (inpDateTime.compareTo(curDateTime) < 0) {
                 printError("지난 시간입니다. 다시 입력해주세요.\n");
                 continue;
@@ -378,7 +378,7 @@ public class Console {
         movieScheduleService.addMovieSchedule(
                 movieSchedule.getId(),
                 movieSchedule.getMovie(),
-                movieSchedule.getLocalDate(),
+                movieSchedule.getStartAtDate(),
                 LocalTime.parse(command),
                 Long.parseLong(movieSchedule.getRoom().getRoomNumber()));
 
@@ -458,7 +458,9 @@ public class Console {
                             systemTime.toLocalDate(),
                             systemTime.toLocalTime(),
                             1L),
-                null
+                null,
+                null,
+                systemTime
             ));
         }
     }
@@ -498,16 +500,18 @@ public class Console {
                 ticket.getMovieSchedule().getId(), 
                 ticket.getMovieSchedule().getMovie(), 
                 systemTime.plusDays(num - 1).toLocalDate(), 
-                ticket.getMovieSchedule().getLocalTime(), 
+                ticket.getMovieSchedule().getStartAtTime(), 
                 Long.parseLong(ticket.getMovieSchedule().getRoom().getRoomNumber())),
-            null
+            null,
+            null,
+            systemTime
             ));
         }
     }
     /* 부 프롬프트 2.2: 상영관 선택 */
     private void selectReservationRoomMenu(Ticket ticket) {
         int nextMenu = 0;
-        List<Room> rooms = movieScheduleService.getTheaterByMovieAndDate(ticket.getMovieSchedule().getMovie(), ticket.getMovieSchedule().getLocalDate());
+        List<Room> rooms = movieScheduleService.getTheaterByMovieAndDate(ticket.getMovieSchedule().getMovie(), ticket.getMovieSchedule().getStartAtDate());
         int page = 1;
         int totalPage = rooms.size() / 5 + (rooms.size() % 5 != 0 ? 1 : 0);
         String command = "";
@@ -575,10 +579,12 @@ public class Console {
                 new MovieSchedule(
                 ticket.getMovieSchedule().getId(), 
                 ticket.getMovieSchedule().getMovie(), 
-                ticket.getMovieSchedule().getLocalDate(), 
-                ticket.getMovieSchedule().getLocalTime(), 
+                ticket.getMovieSchedule().getStartAtDate(), 
+                ticket.getMovieSchedule().getStartAtTime(), 
                 Long.parseLong(rooms.get(getPageNumber(page, num) - 1).getRoomNumber())),
-                null
+                null,
+                null,
+                systemTime
             ));
         }
     }
