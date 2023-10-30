@@ -22,6 +22,10 @@ public class EntityParser {
         return Integer.parseInt(data);
     }
 
+    public static Long parseLong(String data) {
+        return Long.parseLong(data);
+    }
+
     public static LocalDate parseDate(String data) {
         return LocalDate.parse(data, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }

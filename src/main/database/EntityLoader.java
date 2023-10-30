@@ -1,16 +1,11 @@
 package database;
 
-import entity.MovieSchedule;
-import entity.Room;
-import entity.Seat;
-import entity.Ticket;
+import entity.*;
 import exception.EntityInstantiateException;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import literal.LiteralRegex;
 import util.Input;
@@ -45,8 +40,6 @@ public class EntityLoader<E> {
             }
             if(type.getName().equals("entity.MovieSchedule")) {
                 //상영 스케줄 데이터 파일 검사
-                //validateRoomIndex(Integer.parseInt(attr[4]));
-                //validateMovieStartTime(attr[3]);
                 validateCodeDuplication(data, attr[0]);
             }
             if(type.getName().equals("entity.Ticket")) {
@@ -56,6 +49,7 @@ public class EntityLoader<E> {
             data.put(attr[0], EntityFactory.createEntity(type, attr));
         }
         if(type.getName().equals("entity.MovieSchedule")) validateMovieScheduleDuplication(data);
+        if(type.getName().equals("entity.Ticket")) validatePhoneNumberDuplication(data);
     }
 
     private <E> void validateCodeDuplication(HashMap<String, E> data, String code) {
@@ -99,6 +93,49 @@ public class EntityLoader<E> {
                             .plusMinutes(Long.parseLong(schedules.get(i).split("\\$")[2]))
                             .isAfter(LocalTime.parse(schedules.get(j).split("\\$")[0]))) {
                         throw new EntityInstantiateException();
+                    }
+                }
+            }
+        }
+    }
+
+    private <E> void validatePhoneNumberDuplication(HashMap<String,E> data) {
+        //의미 규칙: 동일인이 둘 이상의 상영관에 시간이 서로 겹치게 예매할 수 없다.
+
+        for (Map.Entry<String, E> entry1 : data.entrySet()) {
+            for (Map.Entry<String, E> entry2 : data.entrySet()) {
+                if (!entry1.equals(entry2)) {
+                    // 두 개의 value를 비교
+                    String phoneNumber1 = ((Ticket)(entry1).getValue()).getPhoneNumber();
+                    String phoneNumber2 = ((Ticket)(entry2).getValue()).getPhoneNumber();
+
+                    String startDate1 = ((MovieSchedule)((Ticket)(entry1).getValue()).getMovieSchedule()).getStartAtDate().toString();
+                    String startDate2 = ((MovieSchedule)((Ticket)(entry2).getValue()).getMovieSchedule()).getStartAtDate().toString();
+
+                    String roomNumber1 = ((MovieSchedule) ((Ticket) (entry1).getValue()).getMovieSchedule()).getRoom().getRoomNumber();
+                    String roomNumber2 = ((MovieSchedule) ((Ticket) (entry2).getValue()).getMovieSchedule()).getRoom().getRoomNumber();
+
+                  if(phoneNumber1.equals(phoneNumber2) && startDate1.equals(startDate2) && !roomNumber1.equals(roomNumber2)) {
+                        LocalTime startAtTime1 = ((MovieSchedule)((Ticket)(entry1).getValue()).getMovieSchedule()).getStartAtTime();
+                        LocalTime startAtTime2 = ((MovieSchedule)((Ticket)(entry2).getValue()).getMovieSchedule()).getStartAtTime();
+
+                        int runningTime1 = ((Movie)((MovieSchedule)((Ticket)(entry1).getValue()).getMovieSchedule()).getMovie()).getRunningTime();
+                        int runningTime2 = ((Movie)((MovieSchedule)((Ticket)(entry2).getValue()).getMovieSchedule()).getMovie()).getRunningTime();
+
+                        if(startAtTime1.isBefore(startAtTime2)) {
+                            if(startAtTime1.plusMinutes(runningTime1).isAfter(startAtTime2)) {
+                                throw new EntityInstantiateException();
+                            }
+                        }
+                        else if(startAtTime2.isBefore(startAtTime1)) {
+                            if(startAtTime2.plusMinutes(runningTime2).isAfter(startAtTime1)) {
+                                throw new EntityInstantiateException();
+                            }
+                        }
+                    }
+
+                    if (entry1.getValue().equals(entry2.getValue())) {
+                        System.out.println("Value " + entry1.getValue() + "는 map1에서 두 번 이상 발생합니다.");
                     }
                 }
             }
