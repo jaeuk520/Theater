@@ -12,14 +12,19 @@ public class EntityParser {
     public static Map<Class<?>, Method> map = new HashMap<>();
 
     static {
-        for(Method m : EntityParser.class.getDeclaredMethods()) {
-            if (m.getName().startsWith("parse"))
+        for (Method m : EntityParser.class.getDeclaredMethods()) {
+            if (m.getName().startsWith("parse")) {
                 map.put(m.getReturnType(), m);
+            }
         }
     }
 
     public static int parseInt(String data) {
         return Integer.parseInt(data);
+    }
+
+    public static Long parseLong(String data) {
+        return Long.parseLong(data);
     }
 
     public static LocalDate parseDate(String data) {

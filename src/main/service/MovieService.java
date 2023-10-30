@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 public class MovieService {
     private final MovieRepository movieRepository;
     private final int MOVIES_PER_PAGE = 5;
+
     public MovieService(MovieRepository movieRepository) {
         this.movieRepository = movieRepository;
     }

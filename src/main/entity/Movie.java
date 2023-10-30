@@ -1,6 +1,6 @@
 package entity;
 
-public class Movie extends Entity<String>{
+public class Movie extends Entity<String> {
 
     private final String name;
     private final int runningTime;

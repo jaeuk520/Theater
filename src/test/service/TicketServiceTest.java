@@ -49,7 +49,7 @@ public class TicketServiceTest {
         System.out.println(actual.get(0).toString());
 
         System.out.println(actual.get(0).getId());
-        ticketService.cancelReservation(actual.get(0).getId());
+        ticketService.cancelReservation(actual.get(0).getId(), LocalDateTime.now());
 
         List<Ticket> actual2 = ticketRepository.findAll();
         Assertions.assertThat(actual2).hasSize(0);
