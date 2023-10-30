@@ -40,7 +40,19 @@ public class Ticket extends Entity<String> {
         return phoneNumber;
     }
 
-    public void setIscanceled(LocalDateTime cancellationTime) {
+    public boolean isCanceled() {
+        return this.isCanceled;
+    }
+
+    public LocalDateTime getReservationTime() {
+        return this.reservationTime;
+    }
+
+    public LocalDateTime getCancellationTime() {
+        return this.cancellationTime;
+    }
+
+    public void cancel(LocalDateTime cancellationTime) {
         this.isCanceled = true;
         this.cancellationTime = cancellationTime;
     }

@@ -2,6 +2,9 @@ package service;
 
 import entity.MovieSchedule;
 import entity.Ticket;
+import entity.TicketDto;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 import repository.TicketRepository;
 
 import java.time.LocalDateTime;
@@ -25,7 +28,7 @@ public class TicketService {
     public boolean cancelReservation(String id, LocalDateTime cancellationTime) {
 
         if (this.ticketRepository.findById(id).isPresent()) {
-            this.ticketRepository.findById(id).get().setIscanceled(cancellationTime);
+            this.ticketRepository.findById(id).get().cancel(cancellationTime);
             return true;
         } else {
             return false;
@@ -34,13 +37,20 @@ public class TicketService {
 
     //reservation.txt를 돌면서 주어진 전화번호와 동일한 티켓리스트 리턴
     public List<Ticket> getReservationDetails(String phoneNumber) {
-        List<Ticket> ticketList = ticketRepository.findAll();
-        List<Ticket> result = new ArrayList<>();
-        for (Ticket t : ticketList) {
-            if (t.getPhoneNumber().equals(phoneNumber)) {
-                result.add(t);
-            }
-        }
-        return result;
+        return ticketRepository.findAllTicketsByPhoneNumber(phoneNumber);
+    }
+
+    public List<TicketDto> getTicketStatus(String phoneNumber) {
+        List<TicketDto> ticketList = new ArrayList<>();
+        ticketRepository.findAllTicketsByPhoneNumber(phoneNumber)
+                .forEach(ticket -> {
+                    ticketList.add(TicketDto.fromReservedTicket(ticket));
+                    if (ticket.isCanceled()) {
+                        ticketList.add(TicketDto.fromCancelledTicket(ticket));
+                    }
+                });
+        return ticketList.stream()
+                .sorted(Comparator.comparing(TicketDto::getLastModified))
+                .collect(Collectors.toList());
     }
 }
