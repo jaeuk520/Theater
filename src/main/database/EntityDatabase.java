@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 메모리 Database를 구현할 때 사용하는 추상 클래스입니다. <p>
- * HashMap을 사용하며, idStrategy는 IdStrategy.UUID 또는 IdStrategy.NUMBER 중 하나입니다. <p>
+ * 메모리 Database를 구현할 때 사용하는 추상 클래스입니다. <p> HashMap을 사용하며, idStrategy는 IdStrategy.UUID 또는 IdStrategy.NUMBER 중 하나입니다. <p>
  * UUID의 경우 길이 UUIDLength의 랜덤한 문자열이 ID로 들어가고, NUMBER의 경우 lastId를 만들고, lastId를 1 증가시킵니다.
  */
 public abstract class EntityDatabase<E> {
@@ -29,25 +28,32 @@ public abstract class EntityDatabase<E> {
 
     /**
      * 메모리 데이터베이스에 entity를 저장합니다.
+     *
      * @param entity 저장할 엔티티입니다.
      * @return 저장에 성공했다면 ID를, 실패했다면 null을 리턴합니다.
      */
     public abstract String save(E entity);
 
     public String save(E entity, String id) {
-        if (data.containsKey(id)) return null;
+        if (data.containsKey(id)) {
+            return null;
+        }
         data.put(id, entity);
         return id;
     }
 
     public boolean delete(String id) {
-        if (!data.containsKey(id)) return false;
+        if (!data.containsKey(id)) {
+            return false;
+        }
         data.remove(id);
         return true;
     }
 
     public Optional<E> findById(String id) {
-        if (!data.containsKey(id)) return Optional.empty();
+        if (!data.containsKey(id)) {
+            return Optional.empty();
+        }
         return Optional.of(data.get(id));
     }
 

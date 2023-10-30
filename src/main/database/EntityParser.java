@@ -12,9 +12,10 @@ public class EntityParser {
     public static Map<Class<?>, Method> map = new HashMap<>();
 
     static {
-        for(Method m : EntityParser.class.getDeclaredMethods()) {
-            if (m.getName().startsWith("parse"))
+        for (Method m : EntityParser.class.getDeclaredMethods()) {
+            if (m.getName().startsWith("parse")) {
                 map.put(m.getReturnType(), m);
+            }
         }
     }
 

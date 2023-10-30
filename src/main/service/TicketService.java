@@ -10,11 +10,13 @@ import java.util.List;
 
 public class TicketService {
     private final TicketRepository ticketRepository;
+
     public TicketService(TicketRepository ticketRepository) {
         this.ticketRepository = ticketRepository;
     }
 
-    public void addReservation(MovieSchedule movieSchedule, String seatId, String phoneNumber, LocalDateTime reservationTime){
+    public void addReservation(MovieSchedule movieSchedule, String seatId, String phoneNumber,
+                               LocalDateTime reservationTime) {
 
         ticketRepository.save(new Ticket(null, movieSchedule, seatId, phoneNumber, reservationTime));
     }
@@ -25,18 +27,19 @@ public class TicketService {
         if (this.ticketRepository.findById(id).isPresent()) {
             this.ticketRepository.findById(id).get().setIscanceled(cancellationTime);
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
 
     //reservation.txt를 돌면서 주어진 전화번호와 동일한 티켓리스트 리턴
-    public List<Ticket> getReservationDetails(String phoneNumber){
+    public List<Ticket> getReservationDetails(String phoneNumber) {
         List<Ticket> ticketList = ticketRepository.findAll();
         List<Ticket> result = new ArrayList<>();
-        for(Ticket t : ticketList){
-            if(t.getPhoneNumber().equals(phoneNumber)) result.add(t);
+        for (Ticket t : ticketList) {
+            if (t.getPhoneNumber().equals(phoneNumber)) {
+                result.add(t);
+            }
         }
         return result;
     }

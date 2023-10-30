@@ -14,7 +14,8 @@ public class MovieScheduleRepository extends StringIdEntityDatabase<MovieSchedul
         super(MovieSchedule.class, 6, path);
     }
 
-    public List<LocalTime> findAllMoviesStartAtTimeByDateAndRoomNumber(String movieId, LocalDate localDate, Long roomNumber) {
+    public List<LocalTime> findAllMoviesStartAtTimeByDateAndRoomNumber(String movieId, LocalDate localDate,
+                                                                       Long roomNumber) {
         return findAll().stream()
                 .filter(movieSchedule -> Objects.equals(movieSchedule.getMovie().getId(), movieId))
                 .filter(movieSchedule -> Objects.equals(movieSchedule.getStartAtDate(), localDate))

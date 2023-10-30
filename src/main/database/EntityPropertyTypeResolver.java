@@ -16,7 +16,9 @@ public class EntityPropertyTypeResolver {
             // Subclass, need to fetch from hashmap
             // data is an ID of it
             HashMap<String, ?> database = DatabaseContext.getDatabase(entityType);
-            if((T) database.get(data) == null) throw new EntityInstantiateException();
+            if ((T) database.get(data) == null) {
+                throw new EntityInstantiateException();
+            }
             return (T) database.get(data);
         }
         try {

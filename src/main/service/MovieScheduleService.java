@@ -19,13 +19,15 @@ public class MovieScheduleService {
         this.movieScheduleRepository = movieScheduleRepository;
     }
 
-    public void addMovieSchedule(String scheduleId, Movie movie, LocalDate localDate, LocalTime localTime, Long roomNumber) {
+    public void addMovieSchedule(String scheduleId, Movie movie, LocalDate localDate, LocalTime localTime,
+                                 Long roomNumber) {
         movieScheduleRepository.save(new MovieSchedule(scheduleId, movie, localDate, localTime, roomNumber));
     }
 
     // MovieSchedule을 돌면서 주어진 Movie, RoomNumber에 해당하는
 
-    public List<LocalTime> getMovieStartAtTimeByDateAndRoomNumber(String movieId, LocalDate localDate, Long roomNumber) {
+    public List<LocalTime> getMovieStartAtTimeByDateAndRoomNumber(String movieId, LocalDate localDate,
+                                                                  Long roomNumber) {
         return movieScheduleRepository.findAllMoviesStartAtTimeByDateAndRoomNumber(movieId, localDate, roomNumber);
     }
 
@@ -41,11 +43,13 @@ public class MovieScheduleService {
 
     public Boolean[] getMovieStartTimes(Movie movie, LocalDate localDate, Long roomNumber) {
         List<LocalTime> startTimes = getMovieStartAtTimeByDateAndRoomNumber(movie.getId(), localDate, roomNumber);
-        List<LocalTime> startTimesOfLastDay = getMovieStartAtTimeByDateAndRoomNumber(movie.getId(), localDate.minusDays(1), roomNumber);
+        List<LocalTime> startTimesOfLastDay = getMovieStartAtTimeByDateAndRoomNumber(movie.getId(),
+                localDate.minusDays(1), roomNumber);
         Boolean[] isChecked = new Boolean[48];
 
-        for (int i = 0; i < 48; i++)
+        for (int i = 0; i < 48; i++) {
             isChecked[i] = false;
+        }
 
         for (int i = 0; i < startTimes.size(); i++) {
             int start_h = startTimes.get(i).getHour();
@@ -57,8 +61,9 @@ public class MovieScheduleService {
 
             int s = start_h * 2 + (start_m == 30 ? 1 : 0);
             int e = end_h * 2 + (end_m > 30 ? 2 : (end_m > 0 ? 1 : 0));
-            for (int j = s; j < Math.min(48, e); j++)
+            for (int j = s; j < Math.min(48, e); j++) {
                 isChecked[j] |= true;
+            }
         }
 
         for (int i = 0; i < startTimesOfLastDay.size(); i++) {
@@ -71,19 +76,22 @@ public class MovieScheduleService {
 
             if (end_h >= 24) {
                 int e = (end_h - 24) * 2 + (end_m > 30 ? 2 : (end_m > 0 ? 1 : 0));
-                for (int j = 0; j < Math.min(48, e); j++)
+                for (int j = 0; j < Math.min(48, e); j++) {
                     isChecked[j] |= true;
+                }
             }
         }
         return isChecked;
     }
 
     //MovieSchedule을 돌면서 주어진 Movie, 날짜에 해당하는 상영관 번호 리턴
-    public List<Room> getTheaterByMovieAndDate(Movie movie, LocalDate date){
+    public List<Room> getTheaterByMovieAndDate(Movie movie, LocalDate date) {
         List<MovieSchedule> movieSchedules = movieScheduleRepository.findAll();
         List<Room> result = new ArrayList<>();
-        for(MovieSchedule movieSchedule : movieSchedules){
-            if(movieSchedule.getMovie() == movie && movieSchedule.getStartAtDate() == date) result.add(movieSchedule.getRoom());
+        for (MovieSchedule movieSchedule : movieSchedules) {
+            if (movieSchedule.getMovie() == movie && movieSchedule.getStartAtDate() == date) {
+                result.add(movieSchedule.getRoom());
+            }
         }
         return result;
     }
