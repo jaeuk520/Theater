@@ -4,6 +4,11 @@ import entity.Movie;
 import entity.MovieSchedule;
 import entity.Room;
 import entity.Ticket;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 import literal.LiteralRegex;
 import literal.Literals;
 import literal.Path;
@@ -15,17 +20,6 @@ import service.MovieScheduleService;
 import service.MovieService;
 import service.RoomService;
 import service.TicketService;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
 
 
 public class Console {
@@ -255,8 +249,8 @@ public class Console {
             selectMovieDateMenu(new MovieSchedule(
                     movieSchedule.getId(),
                     movieSchedule.getMovie(),
-                    movieSchedule.getLocalDate(),
-                    movieSchedule.getLocalTime(),
+                    movieSchedule.getStartAtDate(),
+                    movieSchedule.getStartAtTime(),
                     Long.parseLong(rooms.get(getPageNumber(page, Integer.parseInt(command)) - 1).getRoomNumber())));
         }
     }
@@ -298,15 +292,15 @@ public class Console {
                 movieSchedule.getId(),
                 movieSchedule.getMovie(),
                 LocalDate.parse(command),
-                movieSchedule.getLocalTime(),
+                movieSchedule.getStartAtTime(),
                 Long.parseLong(movieSchedule.getRoom().getRoomNumber())));
     }
 
     /* 부 프롬프트 1.4: 영화 시작 시각 입력 */
     private void selectMovieTimeMenu(MovieSchedule movieSchedule) {
         String command = "";
-        List<Movie> movies = movieScheduleService.getMovies(
-                movieSchedule.getLocalDate(),
+        List<Movie> movies = movieScheduleService.getDistinctMoviesByStartDateAtAndRoomNumber(
+                movieSchedule.getStartAtDate(),
                 Long.parseLong(movieSchedule.getRoom().getRoomNumber()));
 
         Boolean startTimes[] = new Boolean[48], startTimesOfNextDay[] = new Boolean[48];
@@ -317,12 +311,12 @@ public class Console {
         for (Movie movie : movies) {
             Boolean startTimesTemp[] = movieScheduleService.getMovieStartTimes(
                     movie,
-                    movieSchedule.getLocalDate(),
+                    movieSchedule.getStartAtDate(),
                     Long.parseLong(movieSchedule.getRoom().getRoomNumber()));
 
             Boolean startTimesOfNextDayTemp[] = movieScheduleService.getMovieStartTimes(
                     movie,
-                    movieSchedule.getLocalDate().plusDays(1),
+                    movieSchedule.getStartAtDate().plusDays(1),
                     Long.parseLong(movieSchedule.getRoom().getRoomNumber()));
 
             for (int i = 0; i < 48; i++) {
@@ -333,7 +327,7 @@ public class Console {
 
         while (true) {
             StringBuilder sb = new StringBuilder(String.format(
-                    "============== %s 상영 시각 추가 ==============\n", movieSchedule.getLocalDate()));
+                    "============== %s 상영 시각 추가 ==============\n", movieSchedule.getStartAtDate()));
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 12; j++) {
                     sb.append(i * 12 + j < 10 ? "0" : "").append(i * 12 + j).append("    ");
@@ -354,7 +348,7 @@ public class Console {
 
             // 과거의 시간인지
             LocalDateTime curDateTime = systemTime;
-            LocalDateTime inpDateTime = LocalDateTime.of(movieSchedule.getLocalDate(), LocalTime.parse(command));
+            LocalDateTime inpDateTime = LocalDateTime.of(movieSchedule.getStartAtDate(), LocalTime.parse(command));
             if (inpDateTime.compareTo(curDateTime) < 0) {
                 printError("지난 시간입니다. 다시 입력해주세요.\n");
                 continue;
@@ -391,7 +385,7 @@ public class Console {
         movieScheduleService.addMovieSchedule(
                 movieSchedule.getId(),
                 movieSchedule.getMovie(),
-                movieSchedule.getLocalDate(),
+                movieSchedule.getStartAtDate(),
                 LocalTime.parse(command),
                 Long.parseLong(movieSchedule.getRoom().getRoomNumber()));
 
@@ -475,7 +469,7 @@ public class Console {
                             systemTime.toLocalDate(),
                             systemTime.toLocalTime(),
                             1L),
-                    null
+                    null, null, null
             ));
         }
     }
@@ -498,7 +492,7 @@ public class Console {
                 continue;
             }
 
-            if (command == Literals.BACK) {
+            if (command.equals(Literals.BACK)) {
                 return;
             } else {
                 break;
