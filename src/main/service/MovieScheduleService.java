@@ -89,7 +89,7 @@ public class MovieScheduleService {
         List<MovieSchedule> movieSchedules = movieScheduleRepository.findAll();
         List<Room> result = new ArrayList<>();
         for (MovieSchedule movieSchedule : movieSchedules) {
-            if (movieSchedule.getMovie() == movie && movieSchedule.getStartAtDate() == date) {
+            if (movieSchedule.getMovie().equals(movie) && movieSchedule.getStartAtDate().equals(date)) {
                 result.add(movieSchedule.getRoom());
             }
         }
