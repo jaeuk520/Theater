@@ -35,6 +35,28 @@ public class Room extends Entity<String> implements EntityValidator {
         return sb.toString();
     }
 
+    public int getTotalSeats() {
+        int cnt = 0;
+        for (Seat[] seat : seats) {
+            for (Seat s : seat) {
+                if (s.isAvailable())
+                    cnt++;
+            }
+        }
+        return cnt;
+    }
+
+    public int getRemainSeats() {
+        int cnt = 0;
+        for (Seat[] seat : seats) {
+            for (Seat s : seat) {
+                if (s.isAvailable() && !s.isReserved())
+                    cnt++;
+            }
+        }
+        return cnt;
+    }
+
     public String getRoomNumber() {
         return getId();
     }
