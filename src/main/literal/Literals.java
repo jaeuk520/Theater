@@ -6,6 +6,7 @@ public class Literals {
     public static final String MANAGEMENT = "1";
     public static final String RESERVATION = "2";
     public static final String CANCEL_RESERVATION = "3";
+    public static final String CHECK_RESERVATION = "4";
 
     public static final String BACK = "0";
 
