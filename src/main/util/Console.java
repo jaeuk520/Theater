@@ -742,7 +742,7 @@ public class Console {
             selectReservationTimeMenu(ticket);
         }
         else if (nextMenu == 1) {
-            printReservationCodeMenu(new Ticket(
+            inputPhoneNumberMenu(new Ticket(
                 ticket.getId(),
                 ticket.getMovieSchedule(),
                 command,
@@ -752,9 +752,50 @@ public class Console {
         }
     }
 
-    /* 부 프롬프트 2.5: 예매 코드 출력 */
+    /* 부 프롬프트 2.5: 전화번호 입력 */
+    private void inputPhoneNumberMenu(Ticket ticket) {
+        int nextMenu = 0;
+        String command = "";
+        while (true) {
+            println("============== 전화번호 입력 ==============");
+            printf("전화번호 입력(뒤로가기: 0): ");
+
+            if ((command = input.getByPattern(LiteralRegex.PHONE_NUMBER)) == null) {
+                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+                continue;
+            }
+
+            if (command == Literals.BACK) {
+                nextMenu = -1;
+            } else {
+                nextMenu = 1;
+            }
+
+            if (nextMenu != 0)
+                break;
+        }
+        if(nextMenu == -1) 
+            selectReservationSeatMenu(ticket);
+        else if (nextMenu == 1) {
+            printReservationCodeMenu(new Ticket(
+                ticket.getId(),
+                ticket.getMovieSchedule(),
+                ticket.getSeatId(),
+                command,
+                systemTime
+            ));
+        }
+    }
+
+    /* 부 프롬프트 2.6: 예매 코드 출력 */
     private void printReservationCodeMenu(Ticket ticket) {
-        println("부 프롬프트 2.5: 예매 코드 출력");
+        ticketService.addReservation(
+                ticket.getMovieSchedule(),
+                ticket.getSeatId(),
+                ticket.getPhoneNumber(),
+                ticket.getReservationTime());
+        println("============== 예매코드 ==============");
+        println("print reservation code here");
     }
 
     /* 부 프롬프트 3: 예매 취소 */
@@ -766,7 +807,7 @@ public class Console {
     private void checkReservationDetailsMenu() {
         String command = "";
         while (true) {
-            println("============== 시스템 시각 입력 ==============");
+            println("============== 전화번호 입력 ==============");
             printf("전화번호 입력(뒤로가기: 0): ");
 
             if ((command = input.getByPattern(LiteralRegex.PHONE_NUMBER)) == null) {
