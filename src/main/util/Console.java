@@ -4,6 +4,8 @@ import entity.Movie;
 import entity.MovieSchedule;
 import entity.Room;
 import entity.Ticket;
+import entity.TicketDto;
+
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,6 +49,7 @@ public class Console {
                     "1. 영화관리\n" +
                     "2. 예매\n" +
                     "3. 예매취소\n" +
+                    "4. 예매 내역 조회\n" +
                     "0. 종료 \n" +
                     "입력: ");
             if ((command = input.getByPattern(LiteralRegex.MAIN_INPUT)) == null) {
@@ -66,6 +69,10 @@ public class Console {
                 }
                 case Literals.CANCEL_RESERVATION: {
                     cancelReservationMenu();
+                    break;
+                }
+                case Literals.CHECK_RESERVATION: {
+                    checkReservationDetailsMenu();
                     break;
                 }
             }
@@ -753,6 +760,34 @@ public class Console {
     /* 부 프롬프트 3: 예매 취소 */
     private void cancelReservationMenu() {
         println("cancel Reservation menu here");
+    }
+
+    /* 부 프롬프트 4: 예매 내역 조회 */
+    private void checkReservationDetailsMenu() {
+        String command = "";
+        while (true) {
+            println("============== 시스템 시각 입력 ==============");
+            printf("전화번호 입력(뒤로가기: 0): ");
+
+            if ((command = input.getByPattern(LiteralRegex.PHONE_NUMBER)) == null) {
+                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+                continue;
+            }
+
+            println("예매 내역은 다음과 같습니다.");
+            List<TicketDto> tickets = ticketService.getTicketStatus(command);
+            for (TicketDto ticket : tickets) {
+                println(String.format("(%s %s %s) %s %s %s %s관 %s",
+                        ticket.getLastModified().toLocalDate().toString(),
+                        ticket.getLastModified().toLocalTime().toString(),
+                        ticket.isCanceledOrReserved(),
+                        ticket.getMovieTitle(),
+                        ticket.getStartAtDate().toString(),
+                        ticket.getStartAtTime().toString(),
+                        ticket.getRoomNumber(),
+                        ticket.getSeatNumber()));
+            }
+        }
     }
 
     /* 시스템 시각 입력 */
