@@ -1,7 +1,7 @@
 package literal;
 
 public class LiteralRegex {
-    public static final String MAIN_INPUT = "\\s*[0-3]\\s*$";
+    public static final String MAIN_INPUT = "\\s*[0-4]\\s*$";
     public static final String MANAGE_INPUT = "\\s*[0-57-9]\\s*$";
     public static final String PAGE_NO_OPTION_INPUT = "\\s*[0-57-8]\\s*$";
     public static final String RESERVATION_DATE_INPUT = "\\s*[0-7]\\s*$";
