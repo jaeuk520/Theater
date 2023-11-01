@@ -57,8 +57,34 @@ public class Room extends Entity<String> implements EntityValidator {
         return cnt;
     }
 
+    public String getSeatsToString() {
+        StringBuilder sb = new StringBuilder("  ");
+        for (int i = 1; i <= seats.length; i++) {
+            if (i < 10)
+                sb.append("0");
+            sb.append(i).append(" ");
+        }
+        sb.append("\n");
+        for (int i = 0; i < seats.length; i++) {
+            sb.append(String.valueOf((char)(i + 'A')) + " ");
+            for (Seat s : seats[i]) {
+                sb.append(s.isAvailable() ? (s.isReserved() ? "■" : "□") : " ").append("  ");
+            }
+            sb.append('\n');
+        }
+        sb.append('\n');
+        return sb.toString();
+    }
+
     public String getRoomNumber() {
         return getId();
+    }
+
+    public boolean canReserveSeat(String seat) {
+        int row = (int) (seat.charAt(0) - 'A');
+        int col = Integer.parseInt(seat.substring(1)) - 1;
+        System.out.println(row + " " + col);
+        return seats[row][col].isAvailable() && !seats[row][col].isReserved();
     }
 
     @Override
