@@ -97,15 +97,17 @@ public class MovieScheduleService {
     }
 
     //영화 정보, 관, 시작 시각이 주어졌을 때, 해당 스케줄의 Room 리턴
-    public Room getRoomByMovieDateTheaterNo(Movie movie, LocalDate date, String roomNumber) {
+    public Room getRoomByMovieSchedule(Movie movie, LocalDate date, LocalTime time, String roomNumber) {
         List<MovieSchedule> movieSchedules = movieScheduleRepository.findAll();
         for (MovieSchedule movieSchedule : movieSchedules) {
             if (movieSchedule.getMovie().equals(movie) &&
                     movieSchedule.getStartAtDate().equals(date) &&
+                    movieSchedule.getStartAtTime().equals(time) && 
                     movieSchedule.getRoom().getRoomNumber().equals(roomNumber)) {
                 return movieSchedule.getRoom();
             }
         }
         return null; // 원하는 Room이 없을 경우 null을 반환
     }
+
 }
