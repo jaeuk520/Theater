@@ -607,10 +607,11 @@ public class Console {
 
     /* 부 프롬프트 2.3: 일정 선택 */
     private void selectReservationTimeMenu(Ticket ticket) {
+        MovieSchedule movieSchedule = ticket.getMovieSchedule();
         List<LocalTime> schedules = movieScheduleService.getMovieStartAtTimeByDateAndRoomNumber(
-                    ticket.getMovieSchedule().getMovie().getId(),
-                    ticket.getMovieSchedule().getStartAtDate(),
-                    Long.parseLong(ticket.getMovieSchedule().getRoom().getRoomNumber()));
+                    movieSchedule.getMovie().getId(),
+                    movieSchedule.getStartAtDate(),
+                    Long.parseLong(movieSchedule.getRoom().getRoomNumber()));
         int sz = schedules.size();
         int page = 1;
         int totalPage = sz / 5 + (sz % 5 != 0 ? 1 : 0);
@@ -623,8 +624,13 @@ public class Console {
             for (int i = (page - 1) * 5, idx = 1; idx <= 5 && i < sz; i++, idx++) {
                 LocalTime startAtTime = schedules.get(i);
                 LocalTime endAtTime = startAtTime.plusMinutes(ticket.getMovieSchedule().getMovie().getRunningTime());
+                Room room = movieScheduleService.getRoomByMovieSchedule(
+                        movieSchedule.getMovie(),
+                        movieSchedule.getStartAtDate(),
+                        startAtTime,
+                        movieSchedule.getRoom().getRoomNumber());
                 sb.append(idx).append(". ").append(startAtTime.toString()).append("-").append(endAtTime.toString())
-                        .append("[잔여 좌석 수 / 총 좌석 수]\n");
+                        .append(String.format("[%d / %d]\n", room.getRemainSeats(), room.getTotalSeats()));
             }
             sb.append(String.format("=========== 페이지 %d / %d ===========\n", page, totalPage));
             sb.append("7. 이전 페이지\n8. 다음 페이지\n0. 뒤로가기\n입력: ");
@@ -698,6 +704,20 @@ public class Console {
     private void selectReservationSeatMenu(Ticket ticket) {
         println("부 프롬프트 2.4: 좌석 선택");
         println(ticket.getMovieSchedule().getStartAtTime().toString());
+        String command = "";
+        Room room = ticket.getMovieSchedule().getRoom();
+        while (true) {
+            command = "";
+            StringBuilder sb = new StringBuilder("============== 좌석 선택 ==============\n");
+
+            sb.append("입력 (뒤로가기: 0) : ");
+            printf(sb.toString());
+
+            if ((command = input.getByPattern(LiteralRegex.PAGE_NO_OPTION_INPUT)) == null) {
+                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+                continue;
+            }
+        }
     }
 
     /* 부 프롬프트 2.5: 예매 코드 출력 */
