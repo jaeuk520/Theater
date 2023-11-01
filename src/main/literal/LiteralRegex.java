@@ -14,6 +14,6 @@ public class LiteralRegex {
     public static final String MOVIE_ID = "\\s*[A-Za-z0-9]{4}\\s*";
     public static final String START_TIME = "\\s*([0-1][0-9]|2[0-3]):(00|30)\\s*";
     public static final String TICKET_ID = "";
-    public static final String SEAT_NUMBER = "\\s*[A-Z](0[1-9]|[1-9][0-9])\\s*";
+    public static final String SEAT_NUMBER = "\\s*0|([A-Z](0[1-9]|[1-9][0-9]))\\s*";
     public static final String SYSTEM_TIME = "\\s*[0-9]{4}-[0-9]{2}-[0-9]{2}-([0-1][0-9]|2[0-3])-[0-5][0-9]\\s*";
 }
