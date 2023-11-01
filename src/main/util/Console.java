@@ -702,21 +702,46 @@ public class Console {
 
     /* 부 프롬프트 2.4: 좌석 선택 */
     private void selectReservationSeatMenu(Ticket ticket) {
-        println("부 프롬프트 2.4: 좌석 선택");
-        println(ticket.getMovieSchedule().getStartAtTime().toString());
+        int nextMenu = 0;
         String command = "";
-        Room room = ticket.getMovieSchedule().getRoom();
+        MovieSchedule movieSchedule = ticket.getMovieSchedule();
+        Room room = movieScheduleService.getRoomByMovieSchedule(
+                movieSchedule.getMovie(),
+                movieSchedule.getStartAtDate(),
+                movieSchedule.getStartAtTime(),
+                movieSchedule.getRoom().getRoomNumber());
         while (true) {
             command = "";
             StringBuilder sb = new StringBuilder("============== 좌석 선택 ==============\n");
-
+            sb.append(room.getSeatsToString());
             sb.append("입력 (뒤로가기: 0) : ");
             printf(sb.toString());
 
-            if ((command = input.getByPattern(LiteralRegex.PAGE_NO_OPTION_INPUT)) == null) {
+            if ((command = input.getByPattern(LiteralRegex.SEAT_NUMBER)) == null) {
                 printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
                 continue;
             }
+
+            if (command == Literals.BACK) {
+                nextMenu = -1;
+            } else if (room.canReserveSeat(command)) {
+                nextMenu = 1;
+            }
+
+            if (nextMenu != 0)
+                break;
+        }
+        if (nextMenu == -1) {
+            selectReservationTimeMenu(ticket);
+        }
+        else if (nextMenu == 1) {
+            printReservationCodeMenu(new Ticket(
+                ticket.getId(),
+                ticket.getMovieSchedule(),
+                command,
+                null,
+                systemTime
+            ));
         }
     }
 
