@@ -52,8 +52,13 @@ public class Ticket extends Entity<String> {
         return this.cancellationTime;
     }
 
-    public void cancel(LocalDateTime cancellationTime) {
-        this.isCanceled = true;
-        this.cancellationTime = cancellationTime;
+    public boolean cancel(LocalDateTime cancellationTime) {
+        if (LocalDateTime.of(this.movieSchedule.getStartAtDate(), this.movieSchedule.getStartAtTime())
+                .isAfter(cancellationTime)) {
+            this.isCanceled = true;
+            this.cancellationTime = cancellationTime;
+            return true;
+        } else
+            return false;
     }
 }

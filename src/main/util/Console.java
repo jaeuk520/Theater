@@ -800,7 +800,21 @@ public class Console {
 
     /* 부 프롬프트 3: 예매 취소 */
     private void cancelReservationMenu() {
-        println("cancel Reservation menu here");
+        String command = "";
+        while (true) {
+            println("============== 예매취소 ==============");
+            println("예매 코드 입력 (뒤로 가기: 0): ");
+            if ((command = input.getByPattern(LiteralRegex.RESERVATION_CODE)) == null) {
+                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+                continue;
+            }
+
+            if (!ticketService.cancelReservation(command, systemTime)) {
+                printError("해당 예매 코드가 존재하지 않습니다. 다시 입력해주세요.\n");
+                continue;
+            } else
+                break;
+        }
     }
 
     /* 부 프롬프트 4: 예매 내역 조회 */
@@ -834,6 +848,7 @@ public class Console {
                         ticket.getRoomNumber(),
                         ticket.getSeatNumber()));
             }
+            break;
         }
         if(nextMenu == -1) 
             return;

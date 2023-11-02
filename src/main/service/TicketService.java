@@ -28,8 +28,7 @@ public class TicketService {
     public boolean cancelReservation(String id, LocalDateTime cancellationTime) {
 
         if (this.ticketRepository.findById(id).isPresent()) {
-            this.ticketRepository.findById(id).get().cancel(cancellationTime);
-            return true;
+            return this.ticketRepository.findById(id).get().cancel(cancellationTime);
         } else {
             return false;
         }
