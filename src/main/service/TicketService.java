@@ -18,10 +18,10 @@ public class TicketService {
         this.ticketRepository = ticketRepository;
     }
 
-    public void addReservation(MovieSchedule movieSchedule, String seatId, String phoneNumber,
+    public String addReservation(MovieSchedule movieSchedule, String seatId, String phoneNumber,
                                LocalDateTime reservationTime) {
 
-        ticketRepository.save(new Ticket(null, movieSchedule, seatId, phoneNumber, reservationTime));
+        return ticketRepository.save(new Ticket(null, movieSchedule, seatId, phoneNumber, reservationTime));
     }
 
     //cancelReservation함수는 예매 취소가 성공하는 경우 true를, 실패하는 경우 false를 반환합니다.
