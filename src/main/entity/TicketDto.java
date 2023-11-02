@@ -55,4 +55,28 @@ public class TicketDto {
     public LocalDateTime getLastModified() {
         return lastModified;
     }
+
+    public String getMovieTitle() {
+        return movieTitle;
+    }
+
+    public LocalDate getStartAtDate() {
+        return scheduleDate;
+    }
+
+    public LocalTime getStartAtTime() {
+        return scheduleTime;
+    }
+
+    public String getRoomNumber() {
+        return roomNumber;
+    }
+
+    public String getSeatNumber() {
+        return seatId;
+    }
+
+    public String isCanceledOrReserved() {
+        return isCancelled ? "취소" : "예매";
+    }
 }
