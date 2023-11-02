@@ -733,6 +733,8 @@ public class Console {
                 nextMenu = -1;
             } else if (room.canReserveSeat(command)) {
                 nextMenu = 1;
+            } else {
+                printError("좌석이 존재하지 않거나 예매 불가능한 좌석입니다. 다시 입력해주세요.\n");
             }
 
             if (nextMenu != 0)
@@ -804,6 +806,7 @@ public class Console {
 
     /* 부 프롬프트 4: 예매 내역 조회 */
     private void checkReservationDetailsMenu() {
+        int nextMenu = 0;
         String command = "";
         while (true) {
             println("============== 전화번호 입력 ==============");
@@ -812,6 +815,11 @@ public class Console {
             if ((command = input.getByPattern(LiteralRegex.PHONE_NUMBER)) == null) {
                 printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
                 continue;
+            }
+
+            if (command == Literals.BACK) {
+                nextMenu = -1;
+                break;
             }
 
             println("예매 내역은 다음과 같습니다.");
@@ -828,6 +836,8 @@ public class Console {
                         ticket.getSeatNumber()));
             }
         }
+        if(nextMenu == -1) 
+            return;
     }
 
     /* 시스템 시각 입력 */
