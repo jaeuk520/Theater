@@ -21,6 +21,7 @@ public class NumericIdEntityDatabase<E> extends EntityDatabase<E> {
         String id = Long.toString(++lastId);
         data.put(id, entity);
         setId(entity, Long.toString(lastId));
+        flush();
         return id;
     }
 

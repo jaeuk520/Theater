@@ -30,6 +30,7 @@ public class StringIdEntityDatabase<E> extends EntityDatabase<E> {
         setId(entity, id);
 
         data.put(id, entity);
+        flush();
         return id;
     }
 }
