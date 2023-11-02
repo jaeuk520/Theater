@@ -342,7 +342,7 @@ public class Console {
                 }
                 sb.append("\n");
                 for (int j = 0; j < 24; j++) {
-                    sb.append(startTimes[i * 24 + j] ? "■" : "□").append("  ");
+                    sb.append(startTimes[i * 24 + j] ? "■" : "□").append(" ");
                 }
                 sb.append("\n");
             }
@@ -728,17 +728,16 @@ public class Console {
                 printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
                 continue;
             }
-
-            if (command == Literals.BACK) {
+            
+            if (command.equals(Literals.BACK)) {
                 nextMenu = -1;
+                break;
             } else if (room.canReserveSeat(command)) {
                 nextMenu = 1;
+                break;
             } else {
                 printError("좌석이 존재하지 않거나 예매 불가능한 좌석입니다. 다시 입력해주세요.\n");
             }
-
-            if (nextMenu != 0)
-                break;
         }
         if (nextMenu == -1) {
             selectReservationTimeMenu(ticket);
@@ -767,7 +766,7 @@ public class Console {
                 continue;
             }
 
-            if (command == Literals.BACK) {
+            if (command.equals(Literals.BACK)) {
                 nextMenu = -1;
             } else {
                 nextMenu = 1;
@@ -817,7 +816,7 @@ public class Console {
                 continue;
             }
 
-            if (command == Literals.BACK) {
+            if (command.eqauls(Literals.BACK)) {
                 nextMenu = -1;
                 break;
             }
