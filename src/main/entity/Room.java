@@ -83,7 +83,8 @@ public class Room extends Entity<String> implements EntityValidator {
     public boolean canReserveSeat(String seat) {
         int row = (int) (seat.charAt(0) - 'A');
         int col = Integer.parseInt(seat.substring(1)) - 1;
-        System.out.println(row + " " + col);
+        if (row >= seats.length || col >= seats[0].length)
+            return false;
         return seats[row][col].isAvailable() && !seats[row][col].isReserved();
     }
 
