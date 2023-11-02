@@ -532,7 +532,7 @@ public class Console {
     /* 부 프롬프트 2.2: 상영관 선택 */
     private void selectReservationRoomMenu(Ticket ticket) {
         int nextMenu = 0;
-        List<Room> rooms = movieScheduleService.getTheaterByMovieAndDate(
+        List<Long> rooms = movieScheduleService.getTheaterByMovieAndDate(
                 ticket.getMovieSchedule().getMovie(),
                 ticket.getMovieSchedule().getStartAtDate());
         int page = 1;
@@ -543,7 +543,7 @@ public class Console {
             command = "";
             StringBuilder sb = new StringBuilder("============== 상영관 선택 ==============\n");
             for (int i = (page - 1) * 5, idx = 1; idx <= 5 && i < rooms.size(); i++, idx++)
-                sb.append(idx).append(". ").append(rooms.get(i).getRoomNumber()).append("관\n");
+                sb.append(idx).append(". ").append(rooms.get(i)).append("관\n");
             sb.append(String.format("=========== 페이지 %d / %d ===========\n", page, totalPage));
             sb.append("7. 이전 페이지\n8. 다음 페이지\n0. 뒤로가기\n입력: ");
             printf(sb.toString());
@@ -560,7 +560,7 @@ public class Console {
                 case "4":
                 case "5": {
                     int num = Integer.parseInt(command);
-                    if (!checkValidRoomNumber(rooms, page, num)) {
+                    if (!checkValidNumber(rooms.size(), page, num)) {
                         printError("해당 관이 존재하지 않습니다. 다시 입력해 주세요.");
                         continue;
                     } else 
@@ -604,7 +604,7 @@ public class Console {
                 ticket.getMovieSchedule().getMovie(), 
                 ticket.getMovieSchedule().getStartAtDate(), 
                 ticket.getMovieSchedule().getStartAtTime(), 
-                Long.parseLong(rooms.get(getPageNumber(page, num) - 1).getRoomNumber())),
+                rooms.get(getPageNumber(page, num) - 1)),
                 null,
                 null,
                 systemTime
