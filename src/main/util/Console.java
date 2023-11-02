@@ -789,13 +789,12 @@ public class Console {
 
     /* 부 프롬프트 2.6: 예매 코드 출력 */
     private void printReservationCodeMenu(Ticket ticket) {
-        ticketService.addReservation(
+        println("============== 예매코드 ==============");
+        println(ticketService.addReservation(
                 ticket.getMovieSchedule(),
                 ticket.getSeatId(),
                 ticket.getPhoneNumber(),
-                ticket.getReservationTime());
-        println("============== 예매코드 ==============");
-        println("print reservation code here");
+                ticket.getReservationTime()));
     }
 
     /* 부 프롬프트 3: 예매 취소 */
