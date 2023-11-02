@@ -816,7 +816,7 @@ public class Console {
                 continue;
             }
 
-            if (command.eqauls(Literals.BACK)) {
+            if (command.equals(Literals.BACK)) {
                 nextMenu = -1;
                 break;
             }
