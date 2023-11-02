@@ -792,11 +792,11 @@ public class Console {
     /* 부 프롬프트 2.6: 예매 코드 출력 */
     private void printReservationCodeMenu(Ticket ticket) {
         println("============== 예매코드 ==============");
-        println(ticketService.addReservation(
+        println("예매 코드는 " + ticketService.addReservation(
                 ticket.getMovieSchedule(),
                 ticket.getSeatId(),
                 ticket.getPhoneNumber(),
-                ticket.getReservationTime()));
+                ticket.getReservationTime()) + " 입니다.");
     }
 
     /* 부 프롬프트 3: 예매 취소 */
@@ -844,8 +844,7 @@ public class Console {
     public void inputCurrentTime() {
         String command = "";
         while (true) {
-            println("============== 시스템 시각 입력 ==============");
-            printf("입력 (yyyy-MM-dd-HH-mm 형식): ");
+            printf("기준 시각 입력 (yyyy-MM-dd-HH-mm 형식): ");
 
             if ((command = input.getByPattern(LiteralRegex.SYSTEM_TIME)) == null) {
                 printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
