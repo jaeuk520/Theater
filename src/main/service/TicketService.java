@@ -94,7 +94,7 @@ public class TicketService {
                     }
                 });
         return ticketList.stream()
-                .sorted(Comparator.comparing(TicketDto::getLastModified))
+                .sorted(Comparator.comparing(TicketDto::getLastModified).reversed())
                 .collect(Collectors.toList());
     }
 }
