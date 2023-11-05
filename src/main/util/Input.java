@@ -44,7 +44,6 @@ public class Input {
     public String getByPattern(String pattern) {
         while (true) {
             String s = scanner.nextLine();
-            if (s.isEmpty()) continue;
             if (s.matches(pattern)) return s.trim();
             return null;
         }
