@@ -43,16 +43,10 @@ public class Input {
      */
     public String getByPattern(String pattern) {
         while (true) {
-            try {
-                String ret = scanner.next(pattern);
-                scanner.skip(LiteralRegex.FILE_DELIMITER);
-                return ret.trim();
-            } catch (InputMismatchException e) {
-                scanner.next();
-                return null;
-            } catch (NoSuchElementException e) {
-                throw new PatternMismatchException(pattern);
-            }
+            String s = scanner.nextLine();
+            if (s.isEmpty()) continue;
+            if (s.matches(pattern)) return s.trim();
+            return null;
         }
     }
 
