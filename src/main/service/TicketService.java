@@ -3,6 +3,7 @@ package service;
 import entity.MovieSchedule;
 import entity.Ticket;
 import entity.TicketDto;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -78,8 +79,14 @@ public class TicketService {
     public boolean cancelReservation(String id, LocalDateTime cancellationTime) {
         Optional<Ticket> actual = ticketRepository.findById(id);
         if (actual.isPresent()) {
-            actual.get().cancel(cancellationTime);
-            actual.get().getMovieSchedule().getRoom().getSeatById(actual.get().getSeatId()).setReserved(false);
+
+            Ticket ticket = actual.get();
+            LocalDate startAtDate = ticket.getMovieSchedule().getStartAtDate();
+            LocalTime startAtTime = ticket.getMovieSchedule().getStartAtTime();
+            if (LocalDateTime.of(startAtDate, startAtTime).isBefore(cancellationTime)) return false;
+
+            ticket.cancel(cancellationTime);
+            ticket.getMovieSchedule().getRoom().getSeatById(ticket.getSeatId()).setReserved(false);
             ticketRepository.flush();
             return true;
         }
@@ -106,4 +113,5 @@ public class TicketService {
                 .sorted(Comparator.comparing(TicketDto::getLastModified).reversed())
                 .collect(Collectors.toList());
     }
+
 }
