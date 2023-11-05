@@ -16,6 +16,7 @@ public class TicketService {
     public static final String OVERLAPPING_TIME = "ERR_OVERLAP";
     public static final String DUPLICATE_TICKET = "ERR_DUPLICATE";
     private final TicketRepository ticketRepository;
+
     public TicketService(TicketRepository ticketRepository) {
         this.ticketRepository = ticketRepository;
     }
@@ -52,6 +53,7 @@ public class TicketService {
             return DUPLICATE_TICKET;
         }
         else {
+            movieSchedule.getRoom().getSeatById(seatId).setReserved(true);
             return ticketRepository.save(new Ticket(null, movieSchedule, seatId, phoneNumber, reservationTime, reservationTime, 0));
         }
     }
@@ -59,15 +61,22 @@ public class TicketService {
     private boolean isOverlap(LocalTime start1, LocalTime end1, LocalTime start2, LocalTime end2) {
         return start1.isBefore(end2) && end1.isAfter(start2);
     }
-    //cancelReservation함수는 예매 취소가 성공하는 경우 true를, 실패하는 경우 false를 반환합니다.
 
+    //cancelReservation함수는 예매 취소가 성공하는 경우 true를, 실패하는 경우 false를 반환합니다.
     public boolean isTicketExistsById(String id) {
         return ticketRepository.findById(id).isPresent();
     }
 
     public boolean cancelReservation(String id, LocalDateTime cancellationTime) {
         Optional<Ticket> actual = ticketRepository.findById(id);
-        return actual.map(ticket -> ticket.cancel(cancellationTime)).orElse(false);
+        if (actual.isPresent()) {
+            actual.get().cancel(cancellationTime);
+            actual.get().getMovieSchedule().getRoom().getSeatById(actual.get().getSeatId()).setReserved(false);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     //reservation.txt를 돌면서 주어진 전화번호와 동일한 티켓리스트 리턴

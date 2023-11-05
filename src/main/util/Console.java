@@ -697,7 +697,7 @@ public class Console {
             if (command.equals(Literals.BACK)) {
                 nextMenu = -1;
                 break;
-            } else if (room.canReserveSeat(command)) {
+            } else if (room.getSeatById(command) != null) {
                 nextMenu = 1;
                 break;
             } else {

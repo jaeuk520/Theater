@@ -81,15 +81,14 @@ public class Room extends Entity<String> implements EntityValidator {
         return getId();
     }
 
-    public boolean canReserveSeat(String seat) {
+    public Seat getSeatById(String seatId) {
         try {
-            int row = (int) (seat.charAt(0) - 'A');
-            int col = Integer.parseInt(seat.substring(1)) - 1;
-            if (row >= seats.length || col >= seats[0].length)
-                return false;
-            return seats[row][col].isAvailable() && !seats[row][col].isReserved();
+            int row = (int) (seatId.charAt(0) - 'A');
+            int col = Integer.parseInt(seatId.substring(1)) - 1;
+            if (row >= seats.length || col >= seats[0].length) return null;
+            return seats[row][col];
         } catch (NumberFormatException e) {
-            return false;
+            return null;
         }
     }
 
