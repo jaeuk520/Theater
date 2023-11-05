@@ -3,6 +3,9 @@ package database;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 
 public class EntityWriter<E> {
@@ -41,7 +44,7 @@ public class EntityWriter<E> {
         try {
             File f = new File(path);
             f.createNewFile();
-            FileWriter fileWriter = new FileWriter(f, false);
+            OutputStreamWriter fileWriter = new OutputStreamWriter(Files.newOutputStream(f.toPath()), StandardCharsets.UTF_8);
             for (Object obj : data.values()) {
                 fileWriter.append(obj.toString());
             }
