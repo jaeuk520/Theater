@@ -739,7 +739,10 @@ public class Console {
             selectReservationSeatMenu(movieSchedule);
         } else if (nextMenu == 1) {
             String ticketId = ticketService.addReservation(movieSchedule, seatId, command, systemTime);
-            printReservationCodeMenu(ticketId);
+            if (ticketId == null) {
+               printError("같은 시간에 다른 상영관에서 영화가 예매되어 있습니다. 다시 시도해 주세요.");
+            }
+            else printReservationCodeMenu(ticketId);
         }
     }
 

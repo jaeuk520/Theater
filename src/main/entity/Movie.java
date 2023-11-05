@@ -20,6 +20,6 @@ public class Movie extends Entity<String> {
     }
 
     public String toString() {
-        return id + "$" + runningTime + "$" + name + '\n';
+        return id + "$" + name + "$" + runningTime + '\n';
     }
 }
