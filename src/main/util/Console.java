@@ -339,7 +339,7 @@ public class Console {
                 }
                 sb.append("\n");
                 for (int j = 0; j < 24; j++) {
-                    sb.append(startTimes[i * 24 + j] ? "■" : "□").append(" ");
+                    sb.append(startTimes[i * 24 + j] ? "■ " : "□ ").append(" ");
                 }
                 sb.append("\n");
             }
