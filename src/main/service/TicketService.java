@@ -13,8 +13,9 @@ import java.util.stream.Collectors;
 import repository.TicketRepository;
 
 public class TicketService {
+    public static final String OVERLAPPING_TIME = "ERR_OVERLAP";
+    public static final String DUPLICATE_TICKET = "ERR_DUPLICATE";
     private final TicketRepository ticketRepository;
-
     public TicketService(TicketRepository ticketRepository) {
         this.ticketRepository = ticketRepository;
     }
@@ -37,8 +38,18 @@ public class TicketService {
                         }
                 )
                 .findAny();
+
+        Optional<Ticket> dupActual = ticketRepository.findAllTicketsByPhoneNumber(phoneNumber).stream()
+                .filter(ticket -> !ticket.isCanceled() && ticket.getMovieSchedule().getId()
+                        .equals(movieSchedule.getId()) &&
+                        ticket.getSeatId().equals(seatId))
+                .findAny();
+
         if (overlappingTicket.isPresent()) {
-            return null;
+            return OVERLAPPING_TIME;
+        }
+        if (dupActual.isPresent()) {
+            return DUPLICATE_TICKET;
         }
         else {
             return ticketRepository.save(new Ticket(null, movieSchedule, seatId, phoneNumber, reservationTime, reservationTime, 0));
