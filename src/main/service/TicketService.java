@@ -71,6 +71,7 @@ public class TicketService {
         if (actual.isPresent()) {
             actual.get().cancel(cancellationTime);
             actual.get().getMovieSchedule().getRoom().getSeatById(actual.get().getSeatId()).setReserved(false);
+            ticketRepository.flush();
             return true;
         }
         else {
