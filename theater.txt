@@ -1,6 +1,10 @@
-1
+2
 4 4
 OOOO
 OOOO
 OOOO
 OOOO
+3 3
+OOO
+OXO
+OXO
