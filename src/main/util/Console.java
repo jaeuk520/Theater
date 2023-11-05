@@ -807,7 +807,7 @@ public class Console {
             List<TicketDto> tickets = ticketService.getTicketStatus(command);
             if (tickets.isEmpty()) {
                 printError("해당하는 예매내역이 없습니다. 다시 입력해주세요.");
-                break;
+                continue;
             }
             println("예매 내역은 다음과 같습니다.");
             for (TicketDto ticket : tickets) {
