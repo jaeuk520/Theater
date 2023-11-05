@@ -101,7 +101,6 @@ public class EntityLoader<E> {
             schedules.add(startAtTime + "$" + startAtDate + "$" + runningTime + "$" + roomNumber);
         });
         schedules.sort(Comparator.naturalOrder());
-        System.out.println(schedules);
 
         for (int i = 0; i < schedules.size() - 1; i++) {
             for (int j = i + 1; j < schedules.size(); j++) {
@@ -176,6 +175,10 @@ public class EntityLoader<E> {
 
     public void loadTheater(HashMap<String, Room> data) {
         long roomNumber = 1L;
+        if (!input.hasNext()) {
+            System.err.println("Theater.txt가 생성되었으나 상영관 정보가 필요합니다. 상영관 정보를 입력해주세요.");
+            System.exit(0);
+        }
         int totalTheaters = Integer.parseInt(input.readLine());
         for (int t = 0; t < totalTheaters; t++) {
             List<Integer> rowCol = Arrays.stream(input.getByPattern("\\d\\ \\d")
