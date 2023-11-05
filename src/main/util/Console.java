@@ -803,8 +803,12 @@ public class Console {
                 break;
             }
 
-            println("예매 내역은 다음과 같습니다.");
             List<TicketDto> tickets = ticketService.getTicketStatus(command);
+            if (tickets.isEmpty()) {
+                printError("해당하는 예매내역이 없습니다. 다시 입력해주세요.");
+                break;
+            }
+            println("예매 내역은 다음과 같습니다.");
             for (TicketDto ticket : tickets) {
                 println(String.format("(%s %s %s) %s %s %s %s관 %s",
                         ticket.getLastModified().toLocalDate().toString(),
