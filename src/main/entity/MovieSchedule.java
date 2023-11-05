@@ -20,6 +20,7 @@ public class MovieSchedule extends Entity<String> implements EntityValidator {
         this.startAtDate = startAtDate;
         this.startAtTime = startAtTime;
         this.room = new Room((Room) DatabaseContext.getDatabase(Room.class).get(Long.toString(roomNumber)));
+        this.validate();
     }
 
     public Movie getMovie() {
