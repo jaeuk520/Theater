@@ -698,6 +698,10 @@ public class Console {
                 nextMenu = -1;
                 break;
             } else if (room.getSeatById(command) != null) {
+                if (room.getSeatById(command).isReserved()) {
+                    printError("이미 예매된 좌석입니다. 다시 입력해주세요.\n");
+                    continue;
+                }
                 nextMenu = 1;
                 break;
             } else {
@@ -741,9 +745,7 @@ public class Console {
             String ticketId = ticketService.addReservation(movieSchedule, seatId, command, systemTime);
             if (ticketId.equals(TicketService.OVERLAPPING_TIME)) {
                printError("같은 시간에 다른 상영관에서 영화가 예매되어 있습니다.");
-            }
-            else if (ticketId.equals(TicketService.DUPLICATE_TICKET)) {
-                printError("이미 예매된 좌석입니다.");
+               inputPhoneNumberMenu(movieSchedule, seatId);
             }
             else printReservationCodeMenu(ticketId);
         }
