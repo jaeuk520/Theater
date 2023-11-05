@@ -51,6 +51,8 @@ public class EntityLoader<E> {
                 validateCodeDuplication(data, attr[0]);
             }
             if (type.getName().equals("entity.Ticket")) {
+                Ticket ticket = (Ticket) EntityFactory.createEntity(type, attr);
+                ticket.getMovieSchedule().getRoom().getSeatById(ticket.getSeatId()).setReserved(true);
                 validateCodeDuplication(data, attr[0]);
                 validateSeatDuplication(data, attr[1], attr[2]);
             }
