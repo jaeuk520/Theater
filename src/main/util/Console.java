@@ -776,6 +776,7 @@ public class Console {
             else if (!ticketService.cancelReservation(command, systemTime)) {
                 printError("이미 지난 예매정보입니다. 다시 입력해주세요.\n");
             } else {
+                println("예매가 취소되었습니다.");
                 break;
             }
         }
