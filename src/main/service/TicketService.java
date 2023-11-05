@@ -40,9 +40,8 @@ public class TicketService {
                 )
                 .findAny();
 
-        Optional<Ticket> dupActual = ticketRepository.findAllTicketsByPhoneNumber(phoneNumber).stream()
-                .filter(ticket -> !ticket.isCanceled() && ticket.getMovieSchedule().getId()
-                        .equals(movieSchedule.getId()) &&
+        Optional<Ticket> dupActual = ticketRepository.findAll().stream()
+                .filter(ticket -> !ticket.isCanceled() && ticket.getMovieSchedule().getId().equals(movieSchedule.getId()) &&
                         ticket.getSeatId().equals(seatId))
                 .findAny();
 
