@@ -69,7 +69,7 @@ public class Room extends Entity<String> implements EntityValidator {
         for (int i = 0; i < seats.length; i++) {
             sb.append(String.valueOf((char)(i + 'A')) + " ");
             for (Seat s : seats[i]) {
-                sb.append(s.isAvailable() ? (s.isReserved() ? "■" : "□") : " ").append(" ");
+                sb.append(s.isAvailable() ? (s.isReserved() ? "■" : "□") : " ").append("  ");
             }
             sb.append('\n');
         }
