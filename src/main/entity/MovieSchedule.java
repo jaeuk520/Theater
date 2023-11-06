@@ -42,7 +42,7 @@ public class MovieSchedule extends Entity<String> implements EntityValidator {
     public String toString() {
         return this.getId() + "$" + movie.getId() + "$" +
                 startAtDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "$" +
-                startAtTime.format(DateTimeFormatter.ofPattern("hh:mm")) + "$" +
+                startAtTime.format(DateTimeFormatter.ofPattern("HH:mm")) + "$" +
                 room.getRoomNumber() + '\n';
     }
 
