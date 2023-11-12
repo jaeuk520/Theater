@@ -3,12 +3,14 @@ package util;
 import entity.Movie;
 import entity.MovieSchedule;
 import entity.Room;
-import entity.TicketDto;
+import entity.TicketVO;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import literal.LiteralRegex;
 import literal.Literals;
 import literal.Path;
@@ -39,41 +41,42 @@ public class Console {
         ticketService = new TicketService(new TicketRepository(Path.RESERVATION_DATA));
     }
 
-    public int mainMenu() {
+    public String inputLoop(String printMessage, String pattern, String errorMessage) {
         while (true) {
-            String command = "";
-            printf("============== 메인메뉴 ==============\n" +
-                    "1. 영화관리\n" +
-                    "2. 예매\n" +
-                    "3. 예매취소\n" +
-                    "4. 예매 내역 조회\n" +
-                    "0. 종료 \n" +
-                    "입력: ");
-            if ((command = input.getByPattern(LiteralRegex.MAIN_INPUT)) == null) {
-                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
-                continue;
-            }
-            switch (command) {
-                case Literals.QUIT:
-                    return exit();
-                case Literals.RESERVATION: {
-                    reservationMenu();
-                    break;
+            try {
+                printf(printMessage);
+                String userInput = input.getByPattern(pattern);
+                if (!userInput.matches(pattern)) {
+                    continue;
                 }
-                case Literals.MANAGEMENT: {
-                    managementMenu();
-                    break;
-                }
-                case Literals.CANCEL_RESERVATION: {
-                    cancelReservationMenu();
-                    break;
-                }
-                case Literals.CHECK_RESERVATION: {
-                    checkReservationDetailsMenu();
-                    break;
-                }
+                return userInput;
+            } catch (Exception e) {
+                printError(errorMessage);
             }
         }
+    }
+
+    public int mainMenu() {
+        String command = inputLoop(
+                "============== 메인메뉴 ==============\n" +
+                "1. 영화관리\n" +
+                "2. 예매\n" +
+                "3. 예매취소\n" +
+                "4. 예매 내역 조회\n" +
+                "0. 종료 \n" +
+                "입력: ",
+                LiteralRegex.MAIN_INPUT,
+                "입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+
+        Map<String, Runnable> nextMenu = new HashMap<>();
+        nextMenu.put(Literals.QUIT, () -> {System.exit(0);});
+        nextMenu.put(Literals.RESERVATION, this::reservationMenu);
+        nextMenu.put(Literals.MANAGEMENT, this::managementMenu);
+        nextMenu.put(Literals.CANCEL_RESERVATION, this::cancelReservationMenu);
+        nextMenu.put(Literals.CHECK_RESERVATION, this::checkReservationDetailsMenu);
+
+        nextMenu.get(command).run();
+        return mainMenu();
     }
 
     /* 부 프롬프트 1: 영화 관리 */
@@ -744,10 +747,11 @@ public class Console {
         } else if (nextMenu == 1) {
             String ticketId = ticketService.addReservation(movieSchedule, seatId, command, systemTime);
             if (ticketId.equals(TicketService.OVERLAPPING_TIME)) {
-               printError("같은 시간에 다른 상영관에서 영화가 예매되어 있습니다.");
-               inputPhoneNumberMenu(movieSchedule, seatId);
+                printError("같은 시간에 다른 상영관에서 영화가 예매되어 있습니다.");
+                inputPhoneNumberMenu(movieSchedule, seatId);
+            } else {
+                printReservationCodeMenu(ticketId);
             }
-            else printReservationCodeMenu(ticketId);
         }
     }
 
@@ -772,12 +776,9 @@ public class Console {
             }
             if (!ticketService.isTicketExistsById(command)) {
                 printError("존재하지 않는 예매 코드입니다. 다시 입력해주세요.\n");
-            }
-            else if (ticketService.isTicketAlreadyCanceled(command)) {
+            } else if (ticketService.isTicketAlreadyCanceled(command)) {
                 printError("이미 취소된 예매정보입니다. 다시 입력해주세요.\n");
-            }
-
-            else if (!ticketService.cancelReservation(command, systemTime)) {
+            } else if (!ticketService.cancelReservation(command, systemTime)) {
                 printError("이미 지난 예매정보입니다. 다시 입력해주세요.\n");
             } else {
                 println("예매가 취소되었습니다.");
@@ -804,13 +805,13 @@ public class Console {
                 break;
             }
 
-            List<TicketDto> tickets = ticketService.getTicketStatus(command);
+            List<TicketVO> tickets = ticketService.getTicketStatus(command);
             if (tickets.isEmpty()) {
                 printError("해당하는 예매내역이 없습니다. 다시 입력해주세요.");
                 continue;
             }
             println("예매 내역은 다음과 같습니다.");
-            for (TicketDto ticket : tickets) {
+            for (TicketVO ticket : tickets) {
                 println(String.format("(%s %s %s) %s %s %s %s관 %s",
                         ticket.getLastModified().toLocalDate().toString(),
                         ticket.getLastModified().toLocalTime().toString(),
@@ -847,8 +848,8 @@ public class Console {
 
             try {
                 systemTime = LocalDateTime.of(year, month, day, hour, minute);
-                if (!(systemTime.isAfter(LocalDateTime.of(2000,1,1,0,0,0)) &&
-                systemTime.isBefore(LocalDateTime.of(2100,12   ,31,23,59,59)))) {
+                if (!(systemTime.isAfter(LocalDateTime.of(2000, 1, 1, 0, 0, 0)) &&
+                        systemTime.isBefore(LocalDateTime.of(2100, 12, 31, 23, 59, 59)))) {
                     printError("지원하지 않는 시각 범위입니다. 다시 입력해주세요.\n");
                     continue;
                 }
@@ -866,10 +867,8 @@ public class Console {
         mainMenu();
     }
 
-    public int exit() {
-        int exitCode = 0;
-        exitCode |= input.close();
-        return exitCode;
+    public void exit() {
+        input.close();
     }
 
     private void printError(String s) {
