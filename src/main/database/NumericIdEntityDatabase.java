@@ -8,9 +8,7 @@ import literal.IdStrategy;
  * @param <E> 엔티티 클래스가 제너릭으로 작성됩니다
  */
 public class NumericIdEntityDatabase<E> extends EntityDatabase<E> {
-
     private long lastId = 0;
-
     public NumericIdEntityDatabase(Class<E> entityType, String path) {
         super(entityType, path);
         this.idStrategy = IdStrategy.NUMBER;
@@ -24,5 +22,4 @@ public class NumericIdEntityDatabase<E> extends EntityDatabase<E> {
         flush();
         return id;
     }
-
 }

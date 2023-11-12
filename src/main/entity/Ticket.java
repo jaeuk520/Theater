@@ -24,19 +24,6 @@ public class Ticket extends Entity<String> {
         this.isCanceled = isCanceled; //1이면 취소된 경우, 생성할 땐 0
     }
 
-    @Override
-    public String toString() {
-        StringJoiner sj = new StringJoiner("$");
-        sj.add(id);
-        sj.add(movieSchedule.getId());
-        sj.add(seatId);
-        sj.add(phoneNumber);
-        sj.add(reservationTime.toString());
-        sj.add(cancellationTime.toString());
-        sj.add(Integer.toString(isCanceled));
-        return sj.toString() + '\n';
-    }
-
     public MovieSchedule getMovieSchedule() {
         return movieSchedule;
     }
@@ -67,7 +54,21 @@ public class Ticket extends Entity<String> {
             this.isCanceled = 1;
             this.cancellationTime = cancellationTime;
             return true;
-        } else
+        } else {
             return false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringJoiner sj = new StringJoiner("$");
+        sj.add(id);
+        sj.add(movieSchedule.getId());
+        sj.add(seatId);
+        sj.add(phoneNumber);
+        sj.add(reservationTime.toString());
+        sj.add(cancellationTime.toString());
+        sj.add(Integer.toString(isCanceled));
+        return sj.toString() + '\n';
     }
 }

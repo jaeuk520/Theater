@@ -1,6 +1,6 @@
 package entity;
 
 public interface EntityValidator {
-
-    void validate();
+    default void validate() {
+    }
 }

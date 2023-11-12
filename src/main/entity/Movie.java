@@ -1,7 +1,6 @@
 package entity;
 
 public class Movie extends Entity<String> {
-
     private final String name;
     private final int runningTime;
 
@@ -9,6 +8,7 @@ public class Movie extends Entity<String> {
         super(id);
         this.name = name;
         this.runningTime = runningTime;
+        validate();
     }
 
     public String getName() {

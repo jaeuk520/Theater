@@ -1,8 +1,7 @@
 package entity;
 
 public class Seat {
-
-    private String seatId;
+    private final String seatId;
     private Boolean isAvailable;
     private Boolean isReserved;
 
@@ -24,10 +23,6 @@ public class Seat {
 
     public boolean isReserved() {
         return isReserved;
-    }
-
-    public void setAvailable(boolean available) {
-        isAvailable = available;
     }
 
     public void setReserved(boolean reserved) {

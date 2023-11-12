@@ -1,17 +1,12 @@
 package util;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Pattern;
-import exception.IllegalPropertyParseException;
-import exception.PatternMismatchException;
-import literal.LiteralRegex;
-
-import java.io.*;
-import java.util.InputMismatchException;
-import java.util.NoSuchElementException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Scanner;
 
 public class Input {
-
     private final Scanner scanner;
 
     /**

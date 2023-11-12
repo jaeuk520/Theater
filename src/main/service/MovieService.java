@@ -1,11 +1,10 @@
 package service;
 
 import entity.Movie;
-import repository.MovieRepository;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import repository.MovieRepository;
 
 public class MovieService {
     private final MovieRepository movieRepository;

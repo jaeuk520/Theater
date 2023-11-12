@@ -3,8 +3,6 @@ package service;
 import entity.Movie;
 import entity.MovieSchedule;
 import entity.Room;
-import repository.MovieScheduleRepository;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -14,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import repository.MovieScheduleRepository;
 
 public class MovieScheduleService {
     public final MovieScheduleRepository movieScheduleRepository;
@@ -22,18 +21,20 @@ public class MovieScheduleService {
         this.movieScheduleRepository = movieScheduleRepository;
     }
 
-    public void addMovieSchedule(String scheduleId, Movie movie, LocalDate localDate, LocalTime localTime,
-                                 Long roomNumber) {
+    public void addMovieSchedule(String scheduleId, Movie movie, LocalDate localDate,
+                                 LocalTime localTime, Long roomNumber) {
         movieScheduleRepository.save(new MovieSchedule(scheduleId, movie, localDate, localTime, roomNumber));
     }
 
     // MovieSchedule을 돌면서 주어진 Movie, RoomNumber에 해당하는
 
+    // 영화와 날짜, 상영관이 주어질 때 영화 상영 시간을 반환
     public List<LocalTime> getMovieStartAtTimeByDateAndRoomNumber(String movieId, LocalDate localDate,
                                                                   Long roomNumber) {
         return movieScheduleRepository.findAllMoviesStartAtTimeByDateAndRoomNumber(movieId, localDate, roomNumber);
     }
 
+    //
     public List<Movie> getDistinctMoviesByStartDateAtAndRoomNumber(LocalDate startDateAt, Long roomNumber) {
         return movieScheduleRepository.findAll().stream()
                 .filter(movieSchedule -> Objects.equals(movieSchedule.getStartAtDate(), startDateAt))
@@ -108,14 +109,13 @@ public class MovieScheduleService {
         for (MovieSchedule movieSchedule : movieSchedules) {
             if (movieSchedule.getMovie().equals(movie) &&
                     movieSchedule.getStartAtDate().equals(date) &&
-                    movieSchedule.getStartAtTime().equals(time) && 
+                    movieSchedule.getStartAtTime().equals(time) &&
                     movieSchedule.getRoom().getRoomNumber().equals(roomNumber)) {
                 return movieSchedule.getRoom();
             }
         }
         return null; // 원하는 Room이 없을 경우 null을 반환
     }
-
 
 
     public MovieSchedule getByMovieAndDateAndRoomNumberAndStartAt(Movie movie, LocalDate date, Long roomNumber,

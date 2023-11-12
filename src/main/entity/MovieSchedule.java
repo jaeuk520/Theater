@@ -2,13 +2,11 @@ package entity;
 
 import database.DatabaseContext;
 import exception.EntityInstantiateException;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class MovieSchedule extends Entity<String> implements EntityValidator {
-
+public class MovieSchedule extends Entity<String> {
     private final Movie movie;
     private final LocalDate startAtDate;
     private final LocalTime startAtTime;
@@ -20,6 +18,7 @@ public class MovieSchedule extends Entity<String> implements EntityValidator {
         this.startAtDate = startAtDate;
         this.startAtTime = startAtTime;
         this.room = new Room((Room) DatabaseContext.getDatabase(Room.class).get(Long.toString(roomNumber)));
+        validate();
     }
 
     public Movie getMovie() {
@@ -48,6 +47,7 @@ public class MovieSchedule extends Entity<String> implements EntityValidator {
 
     @Override
     public void validate() {
+        super.validate();
         //영화 시작 시간이 0분 혹은 30분인지 확인
         if (startAtTime.getMinute() % 30 != 0) {
             throw new EntityInstantiateException();

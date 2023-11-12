@@ -2,7 +2,7 @@ package service;
 
 import entity.MovieSchedule;
 import entity.Ticket;
-import entity.TicketDto;
+import entity.TicketVO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -23,7 +23,7 @@ public class TicketService {
     }
 
     public String addReservation(MovieSchedule movieSchedule, String seatId, String phoneNumber,
-                               LocalDateTime reservationTime) {
+                                 LocalDateTime reservationTime) {
 
         Optional<Ticket> overlappingTicket = ticketRepository.findAllTicketsByPhoneNumber(phoneNumber).stream()
                 .filter(ticket -> {
@@ -42,7 +42,8 @@ public class TicketService {
                 .findAny();
 
         Optional<Ticket> dupActual = ticketRepository.findAll().stream()
-                .filter(ticket -> !ticket.isCanceled() && ticket.getMovieSchedule().getId().equals(movieSchedule.getId()) &&
+                .filter(ticket -> !ticket.isCanceled() && ticket.getMovieSchedule().getId()
+                        .equals(movieSchedule.getId()) &&
                         ticket.getSeatId().equals(seatId))
                 .findAny();
 
@@ -51,10 +52,10 @@ public class TicketService {
         }
         if (dupActual.isPresent()) {
             return DUPLICATE_TICKET;
-        }
-        else {
+        } else {
             movieSchedule.getRoom().getSeatById(seatId).setReserved(true);
-            return ticketRepository.save(new Ticket(null, movieSchedule, seatId, phoneNumber, reservationTime, reservationTime, 0));
+            return ticketRepository.save(
+                    new Ticket(null, movieSchedule, seatId, phoneNumber, reservationTime, reservationTime, 0));
         }
     }
 
@@ -83,14 +84,15 @@ public class TicketService {
             Ticket ticket = actual.get();
             LocalDate startAtDate = ticket.getMovieSchedule().getStartAtDate();
             LocalTime startAtTime = ticket.getMovieSchedule().getStartAtTime();
-            if (LocalDateTime.of(startAtDate, startAtTime).isBefore(cancellationTime)) return false;
+            if (LocalDateTime.of(startAtDate, startAtTime).isBefore(cancellationTime)) {
+                return false;
+            }
 
             ticket.cancel(cancellationTime);
             ticket.getMovieSchedule().getRoom().getSeatById(ticket.getSeatId()).setReserved(false);
             ticketRepository.flush();
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -100,17 +102,17 @@ public class TicketService {
         return ticketRepository.findAllTicketsByPhoneNumber(phoneNumber);
     }
 
-    public List<TicketDto> getTicketStatus(String phoneNumber) {
-        List<TicketDto> ticketList = new ArrayList<>();
+    public List<TicketVO> getTicketStatus(String phoneNumber) {
+        List<TicketVO> ticketList = new ArrayList<>();
         ticketRepository.findAllTicketsByPhoneNumber(phoneNumber)
                 .forEach(ticket -> {
-                    ticketList.add(TicketDto.fromReservedTicket(ticket));
+                    ticketList.add(TicketVO.fromReservedTicket(ticket));
                     if (ticket.isCanceled()) {
-                        ticketList.add(TicketDto.fromCancelledTicket(ticket));
+                        ticketList.add(TicketVO.fromCancelledTicket(ticket));
                     }
                 });
         return ticketList.stream()
-                .sorted(Comparator.comparing(TicketDto::getLastModified).reversed())
+                .sorted(Comparator.comparing(TicketVO::getLastModified).reversed())
                 .collect(Collectors.toList());
     }
 

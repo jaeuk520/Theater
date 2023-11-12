@@ -4,8 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public class TicketDto {
-
+public class TicketVO {
     boolean isCancelled;
     LocalDateTime lastModified;
     String movieTitle;
@@ -14,7 +13,7 @@ public class TicketDto {
     String roomNumber;
     String seatId;
 
-    private TicketDto(boolean isCancelled, LocalDateTime lastModified, String movieTitle, LocalDate scheduleDate,
+    private TicketVO(boolean isCancelled, LocalDateTime lastModified, String movieTitle, LocalDate scheduleDate,
                      LocalTime scheduleTime, String roomNumber, String seatId) {
         this.isCancelled = isCancelled;
         this.lastModified = lastModified;
@@ -25,11 +24,11 @@ public class TicketDto {
         this.seatId = seatId;
     }
 
-    private static TicketDto from(Ticket ticket) {
+    private static TicketVO from(Ticket ticket) {
         final MovieSchedule movieSchedule = ticket.getMovieSchedule();
         final Movie movie = movieSchedule.getMovie();
 
-        return new TicketDto(
+        return new TicketVO(
                 ticket.isCanceled(),
                 null,
                 movie.getName(),
@@ -40,18 +39,18 @@ public class TicketDto {
         );
     }
 
-    public static TicketDto fromCancelledTicket(Ticket ticket) {
-        final TicketDto ticketDto = from(ticket);
-        ticketDto.lastModified = ticket.getCancellationTime();
-        ticketDto.isCancelled = true;
-        return ticketDto;
+    public static TicketVO fromCancelledTicket(Ticket ticket) {
+        final TicketVO ticketVO = from(ticket);
+        ticketVO.lastModified = ticket.getCancellationTime();
+        ticketVO.isCancelled = true;
+        return ticketVO;
     }
 
-    public static TicketDto fromReservedTicket(Ticket ticket) {
-        final TicketDto ticketDto = from(ticket);
-        ticketDto.lastModified = ticket.getReservationTime();
-        ticketDto.isCancelled = false;
-        return ticketDto;
+    public static TicketVO fromReservedTicket(Ticket ticket) {
+        final TicketVO ticketVO = from(ticket);
+        ticketVO.lastModified = ticket.getReservationTime();
+        ticketVO.isCancelled = false;
+        return ticketVO;
     }
 
     public LocalDateTime getLastModified() {

@@ -34,14 +34,6 @@ public abstract class EntityDatabase<E> {
      */
     public abstract String save(E entity);
 
-    public String save(E entity, String id) {
-        if (data.containsKey(id)) {
-            return null;
-        }
-        data.put(id, entity);
-        return id;
-    }
-
     public boolean delete(String id) {
         if (!data.containsKey(id)) {
             return false;
@@ -57,16 +49,6 @@ public abstract class EntityDatabase<E> {
         return Optional.of(data.get(id));
     }
 
-    protected void setId(E entity, String id) {
-        try {
-            Field idField = entity.getClass().getSuperclass().getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(entity, id);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new EntityInstantiateException();
-        }
-    }
-
     /**
      * HashMap에 저장된 엔티티를 파일로 내보냅니다. 이 과정은 성능을 생각하지 않았습니다.
      */
@@ -80,6 +62,16 @@ public abstract class EntityDatabase<E> {
 
     public List<E> findAll() {
         return new ArrayList<>(data.values());
+    }
+
+    protected void setId(E entity, String id) {
+        try {
+            Field idField = entity.getClass().getSuperclass().getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(entity, id);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new EntityInstantiateException();
+        }
     }
 
 }

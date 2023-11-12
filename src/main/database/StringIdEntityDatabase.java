@@ -10,7 +10,6 @@ import java.util.UUID;
  * @param <E> 엔티티 클래스가 제너릭으로 작성됩니다
  */
 public class StringIdEntityDatabase<E> extends EntityDatabase<E> {
-
     protected final int UUIDLength;
 
     public StringIdEntityDatabase(Class<E> entityType, int uuidLength, String path) {

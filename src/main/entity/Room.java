@@ -2,9 +2,9 @@ package entity;
 
 import database.DatabaseContext;
 import exception.EntityInstantiateException;
+import java.util.Arrays;
 
 public class Room extends Entity<String> implements EntityValidator {
-
     private final Seat[][] seats;
 
     public Room(String roomNumber, Seat[][] seats) {
@@ -37,37 +37,27 @@ public class Room extends Entity<String> implements EntityValidator {
     }
 
     public int getTotalSeats() {
-        int cnt = 0;
-        for (Seat[] seat : seats) {
-            for (Seat s : seat) {
-                if (s.isAvailable())
-                    cnt++;
-            }
-        }
-        return cnt;
+        return (int) Arrays.stream(seats)
+                .mapToLong(seatArray -> Arrays.stream(seatArray)
+                        .filter(Seat::isAvailable).count())
+                .sum();
     }
 
     public int getRemainSeats() {
-        int cnt = 0;
-        for (Seat[] seat : seats) {
-            for (Seat s : seat) {
-                if (s.isAvailable() && !s.isReserved())
-                    cnt++;
-            }
-        }
-        return cnt;
+        return (int) Arrays.stream(seats)
+                .mapToLong(seatArray -> Arrays.stream(seatArray)
+                        .filter(seat -> seat.isAvailable() && !seat.isReserved()).count())
+                .sum();
     }
 
     public String getSeatsToString() {
         StringBuilder sb = new StringBuilder("  ");
         for (int i = 1; i <= seats.length; i++) {
-            if (i < 10)
-                sb.append("0");
-            sb.append(i).append(" ");
+            sb.append(String.format("%02d ", i));
         }
         sb.append("\n");
         for (int i = 0; i < seats.length; i++) {
-            sb.append(String.valueOf((char)(i + 'A')) + " ");
+            sb.append(String.valueOf((char) (i + 'A')) + " ");
             for (Seat s : seats[i]) {
                 sb.append(s.isAvailable() ? (s.isReserved() ? "■" : "□") : " ").append("  ");
             }
@@ -85,7 +75,9 @@ public class Room extends Entity<String> implements EntityValidator {
         try {
             int row = (int) (seatId.charAt(0) - 'A');
             int col = Integer.parseInt(seatId.substring(1)) - 1;
-            if (row >= seats.length || col >= seats[0].length) return null;
+            if (row >= seats.length || col >= seats[0].length) {
+                return null;
+            }
             return seats[row][col];
         } catch (NumberFormatException e) {
             return null;
@@ -94,9 +86,10 @@ public class Room extends Entity<String> implements EntityValidator {
 
     @Override
     public void validate() {
+        super.validate();
         // <영화상영관번호> 1이상, 현재 영화관의 상영관 개수 이하
-        if (Integer.parseInt(getRoomNumber()) < 1 || Integer.parseInt(getRoomNumber()) > DatabaseContext.getDatabase(
-                Room.class).size()) {
+        if (Integer.parseInt(getRoomNumber()) < 1 ||
+                Integer.parseInt(getRoomNumber()) > DatabaseContext.getDatabase(Room.class).size()) {
             throw new EntityInstantiateException();
         }
     }
