@@ -57,7 +57,7 @@ public class Room extends Entity<String> implements EntityValidator {
         }
         sb.append("\n");
         for (int i = 0; i < seats.length; i++) {
-            sb.append(String.valueOf((char) (i + 'A')) + " ");
+            sb.append((char) (i + 'A')).append(" ");
             for (Seat s : seats[i]) {
                 sb.append(s.isAvailable() ? (s.isReserved() ? "■" : "□") : " ").append("  ");
             }
@@ -73,7 +73,7 @@ public class Room extends Entity<String> implements EntityValidator {
 
     public Seat getSeatById(String seatId) {
         try {
-            int row = (int) (seatId.charAt(0) - 'A');
+            int row = (seatId.charAt(0) - 'A');
             int col = Integer.parseInt(seatId.substring(1)) - 1;
             if (row >= seats.length || col >= seats[0].length) {
                 return null;
@@ -86,7 +86,8 @@ public class Room extends Entity<String> implements EntityValidator {
 
     @Override
     public void validate() {
-        super.validate();
+        // Room은 각 Schedule이 하나씩 가지므로 id를 확인하는 것은 불필요
+//        super.validate();
         // <영화상영관번호> 1이상, 현재 영화관의 상영관 개수 이하
         if (Integer.parseInt(getRoomNumber()) < 1 ||
                 Integer.parseInt(getRoomNumber()) > DatabaseContext.getDatabase(Room.class).size()) {

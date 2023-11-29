@@ -4,6 +4,7 @@ import entity.Movie;
 import entity.MovieSchedule;
 import entity.Room;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,12 +22,11 @@ public class MovieScheduleService {
         this.movieScheduleRepository = movieScheduleRepository;
     }
 
-    public void addMovieSchedule(String scheduleId, Movie movie, LocalDate localDate,
-                                 LocalTime localTime, Long roomNumber) {
+    public void addMovieSchedule(String scheduleId, Movie movie, LocalDate localDate, LocalTime localTime,
+                                 Long roomNumber) {
         movieScheduleRepository.save(new MovieSchedule(scheduleId, movie, localDate, localTime, roomNumber));
     }
 
-    // MovieSchedule을 돌면서 주어진 Movie, RoomNumber에 해당하는
 
     // 영화와 날짜, 상영관이 주어질 때 영화 상영 시간을 반환
     public List<LocalTime> getMovieStartAtTimeByDateAndRoomNumber(String movieId, LocalDate localDate,
@@ -39,53 +39,37 @@ public class MovieScheduleService {
         return movieScheduleRepository.findAll().stream()
                 .filter(movieSchedule -> Objects.equals(movieSchedule.getStartAtDate(), startDateAt))
                 .filter(movieSchedule -> Objects.equals(Long.parseLong(movieSchedule.getRoom().getRoomNumber()),
-                        roomNumber))
-                .map(MovieSchedule::getMovie)
-                .distinct()
+                        roomNumber)).map(MovieSchedule::getMovie).distinct().collect(Collectors.toList());
+    }
+
+    public List<MovieSchedule> getSchedulesByMovieIdAndRoomNumber(String movieId, Long roomNumber) {
+        return movieScheduleRepository.findAll().stream()
+                .filter(movieSchedule -> movieSchedule.getMovie().getId().equals(movieId))
+                .filter(movieSchedule -> movieSchedule.getRoom().getRoomNumber().equals(String.valueOf(roomNumber)))
                 .collect(Collectors.toList());
     }
 
-    public Boolean[] getMovieStartTimes(Movie movie, LocalDate localDate, Long roomNumber) {
-        List<LocalTime> startTimes = getMovieStartAtTimeByDateAndRoomNumber(movie.getId(), localDate, roomNumber);
-        List<LocalTime> startTimesOfLastDay = getMovieStartAtTimeByDateAndRoomNumber(movie.getId(),
-                localDate.minusDays(1), roomNumber);
-        Boolean[] isChecked = new Boolean[48];
+    public boolean hasScheduleOnTimeBlock(String movieId,
+                                    LocalDateTime startBlockInclusive,
+                                    Long roomNumber) {
+        return getSchedulesByMovieIdAndRoomNumber(movieId, roomNumber).stream()
+                .anyMatch(movieSchedule -> {
+                    LocalDateTime movieStartTime =
+                            LocalDateTime.of(movieSchedule.getStartAtDate(), movieSchedule.getStartAtTime());
+                    LocalDateTime movieEndTime = movieStartTime.plusMinutes(movieSchedule.getMovie().getRunningTime());
+                    LocalDateTime endBlockExclusive = startBlockInclusive.plusMinutes(30);
+                    return movieStartTime.isBefore(endBlockExclusive) && movieEndTime.isAfter(startBlockInclusive);
+                });
+    }
 
-        for (int i = 0; i < 48; i++) {
-            isChecked[i] = false;
-        }
-
-        for (int i = 0; i < startTimes.size(); i++) {
-            int start_h = startTimes.get(i).getHour();
-            int start_m = startTimes.get(i).getMinute();
-
-            int end_time = start_h * 60 + start_m + movie.getRunningTime();
-            int end_h = end_time / 60;
-            int end_m = end_time % 60;
-
-            int s = start_h * 2 + (start_m == 30 ? 1 : 0);
-            int e = end_h * 2 + (end_m > 30 ? 2 : (end_m > 0 ? 1 : 0));
-            for (int j = s; j < Math.min(48, e); j++) {
-                isChecked[j] |= true;
+    public boolean validateScheduleTime(String movieId, int runningTime, LocalDateTime startTime, Long roomNumber) {
+        int ceiledTime = (int) Math.ceil(runningTime / 30.0) * 30;
+        for (int i = 0; i < ceiledTime; i += 30) {
+            if (hasScheduleOnTimeBlock(movieId, startTime.plusMinutes(i), roomNumber)) {
+                return false;
             }
         }
-
-        for (int i = 0; i < startTimesOfLastDay.size(); i++) {
-            int start_h = startTimesOfLastDay.get(i).getHour();
-            int start_m = startTimesOfLastDay.get(i).getMinute();
-
-            int end_time = start_h * 60 + start_m + movie.getRunningTime();
-            int end_h = end_time / 60;
-            int end_m = end_time % 60;
-
-            if (end_h >= 24) {
-                int e = (end_h - 24) * 2 + (end_m > 30 ? 2 : (end_m > 0 ? 1 : 0));
-                for (int j = 0; j < Math.min(48, e); j++) {
-                    isChecked[j] |= true;
-                }
-            }
-        }
-        return isChecked;
+        return true;
     }
 
     //MovieSchedule을 돌면서 주어진 Movie, 날짜에 해당하는 상영관 번호 리턴
@@ -97,8 +81,8 @@ public class MovieScheduleService {
                 result.add(Long.parseLong(movieSchedule.getRoom().getRoomNumber()));
             }
         }
-        Set<Long> distinctSet = new HashSet<Long>(result);
-        List<Long> ret = new ArrayList<Long>(distinctSet);
+        Set<Long> distinctSet = new HashSet<>(result);
+        List<Long> ret = new ArrayList<>(distinctSet);
         ret.sort(Comparator.naturalOrder());
         return ret;
     }
@@ -107,10 +91,9 @@ public class MovieScheduleService {
     public Room getRoomByMovieSchedule(Movie movie, LocalDate date, LocalTime time, String roomNumber) {
         List<MovieSchedule> movieSchedules = movieScheduleRepository.findAll();
         for (MovieSchedule movieSchedule : movieSchedules) {
-            if (movieSchedule.getMovie().equals(movie) &&
-                    movieSchedule.getStartAtDate().equals(date) &&
-                    movieSchedule.getStartAtTime().equals(time) &&
-                    movieSchedule.getRoom().getRoomNumber().equals(roomNumber)) {
+            if (movieSchedule.getMovie().equals(movie) && movieSchedule.getStartAtDate().equals(date)
+                    && movieSchedule.getStartAtTime().equals(time) && movieSchedule.getRoom().getRoomNumber()
+                    .equals(roomNumber)) {
                 return movieSchedule.getRoom();
             }
         }

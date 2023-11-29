@@ -70,11 +70,7 @@ public class TicketService {
 
     public boolean isTicketAlreadyCanceled(String id) {
         Optional<Ticket> actual = ticketRepository.findById(id);
-        if (actual.isPresent()) {
-            return actual.get().isCanceled();
-        } else {
-            return false;
-        }
+        return actual.map(Ticket::isCanceled).orElse(false);
     }
 
     public boolean cancelReservation(String id, LocalDateTime cancellationTime) {

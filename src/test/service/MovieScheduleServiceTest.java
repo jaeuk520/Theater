@@ -93,15 +93,6 @@ class MovieScheduleServiceTest {
         return avengers;
     }
 
-    @Test
-    @DisplayName("영화 스케줄 배열을 올바르게 구한다.")
-    public void testScheduleBlocks() throws Exception {
-        final Movie movie = addMovieSchedulesAndReturnMovie();
-        final Boolean[] actual = movieScheduleService.getMovieStartTimes(movie, LocalDate.of(2023, 10, 1), 1L);
-        int cnt = 0;
-        for(int i = 0; i < 48; i++) if (actual[i]) cnt++;
-        assertThat(cnt).isEqualTo(12);
-    }
 
     @BeforeEach
     void ready() {
