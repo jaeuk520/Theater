@@ -55,20 +55,20 @@ public class Console {
         }
     }
 
-    public int mainMenu() {
-        String command = inputLoop(
-                "============== 메인메뉴 ==============\n" + "1. 영화관리\n" + "2. 예매\n" + "3. 예매취소\n" + "4. 예매 내역 조회\n"
-                        + "0. 종료 \n" + "입력: ", LiteralRegex.MAIN_INPUT, "입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+    public void mainMenu() {
+        while (true) {
+            String command = inputLoop(
+                    "============== 메인메뉴 ==============\n" + "1. 영화관리\n" + "2. 예매\n" + "3. 예매취소\n" + "4. 예매 내역 조회\n"
+                            + "0. 종료 \n" + "입력: ", LiteralRegex.MAIN_INPUT, "입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+            Map<String, Runnable> nextMenu = new HashMap<>();
+            nextMenu.put(Literals.QUIT, () -> System.exit(0));
+            nextMenu.put(Literals.RESERVATION, this::reservationMenu);
+            nextMenu.put(Literals.MANAGEMENT, this::managementMenu);
+            nextMenu.put(Literals.CANCEL_RESERVATION, this::cancelReservationMenu);
+            nextMenu.put(Literals.CHECK_RESERVATION, this::checkReservationDetailsMenu);
 
-        Map<String, Runnable> nextMenu = new HashMap<>();
-        nextMenu.put(Literals.QUIT, () -> System.exit(0));
-        nextMenu.put(Literals.RESERVATION, this::reservationMenu);
-        nextMenu.put(Literals.MANAGEMENT, this::managementMenu);
-        nextMenu.put(Literals.CANCEL_RESERVATION, this::cancelReservationMenu);
-        nextMenu.put(Literals.CHECK_RESERVATION, this::checkReservationDetailsMenu);
-
-        nextMenu.get(command).run();
-        return mainMenu();
+            nextMenu.get(command).run();
+        }
     }
 
     /* 부 프롬프트 1: 영화 관리 */
@@ -162,6 +162,7 @@ public class Console {
                     continue;
                 }
                 selectMovieDateMenu(movie, rooms.get(getPageNumber(page, selected - 1)));
+                return;
             }
 
             if (command.equals(Literals.PREVIOUS_PAGE)) {
@@ -265,8 +266,6 @@ public class Console {
 
         movieScheduleService.addMovieSchedule(null, movie, date, inpDateTime.toLocalTime(),
                 Long.parseLong(room.getRoomNumber()));
-
-        managementMenu();
     }
 
     private void removeMovieMenu() {
@@ -275,11 +274,9 @@ public class Console {
 
     /* 부 프롬프트 2: 예매 */
     private void reservationMenu() {
-        int nextMenu = 0;
         int page = 1;
         int totalPage = movieService.getTotalPages();
         List<Movie> movies = movieService.getSortedMovies();
-        String command = "";
 
         while (true) {
             StringBuilder sb = new StringBuilder("============== 영화예매 ==============\n");
@@ -288,65 +285,42 @@ public class Console {
             }
             sb.append(String.format("=========== 페이지 %d / %d ===========\n", page, totalPage));
             sb.append("7. 이전 페이지\n8. 다음 페이지\n0. 뒤로가기\n입력: ");
-            printf(sb.toString());
-
-            if ((command = input.getByPattern(LiteralRegex.PAGE_NO_OPTION_INPUT)) == null) {
-                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
-                continue;
+            String command = inputLoop(sb.toString(), LiteralRegex.PAGE_NO_OPTION_INPUT,
+                    "입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+            int selected = Integer.parseInt(command);
+            if (1 <= selected && selected <= 5) {
+                if (!checkValidNumber(movies.size(), page, selected)) {
+                    printError("해당 영화가 존재하지 않습니다. 다시 입력해 주세요.");
+                    continue;
+                }
+                selectReservationDateMenu(movies.get(getPageNumber(page, selected - 1)));
             }
 
-            switch (command) {
-                case "1":
-                case "2":
-                case "3":
-                case "4":
-                case "5": {
-                    int num = Integer.parseInt(command);
-                    if (!checkValidMovieNumber(movies, page, num)) {
-                        printError("해당 영화가 존재하지 않습니다. 다시 입력해 주세요.");
-                        continue;
-                    } else {
-                        nextMenu = 1;
-                        break;
-                    }
+            if (command.equals(Literals.PREVIOUS_PAGE)) {
+                if (!movieService.hasNextPage(page)) {
+                    printError("이전 페이지가 존재하지 않습니다.");
+                    continue;
                 }
-
-                case Literals.PREVIOUS_PAGE: {
-                    if (movieService.hasPreviousPage(page)) {
-                        page--;
-                    } else {
-                        printError("이전 페이지가 존재하지 않습니다.");
-                    }
-                    break;
-                }
-
-                case Literals.NEXT_PAGE: {
-                    if (movieService.hasNextPage(page)) {
-                        page++;
-                    } else {
-                        printError("다음 페이지가 존재하지 않습니다.\n");
-                    }
-                    break;
-                }
-
-                case Literals.BACK:
-                    return;
+                page++;
             }
-            if (nextMenu != 0) {
-                break;
+
+            if (command.equals(Literals.NEXT_PAGE)) {
+                if (!movieService.hasPreviousPage(page)) {
+                    printError("다음 페이지가 존재하지 않습니다.\n");
+                    continue;
+                }
+                page--;
             }
-        }
-        if (nextMenu == 1) {
-            int num = Integer.parseInt(command);
-            selectReservationDateMenu(movies.get(getPageNumber(page, num) - 1));
+
+            if (command.equals(Literals.BACK)) {
+                return;
+            }
         }
     }
 
     /* 부 프롬프트 2.1: 예매 날짜 선택 */
     // 인자로 선택한 영화를 받는다
     private void selectReservationDateMenu(Movie movie) {
-        int nextMenu;
-        String command = "";
         while (true) {
             StringBuilder sb = new StringBuilder("============== 날짜선택 ==============\n");
             for (int i = 0; i < 7; i++) {
@@ -355,24 +329,11 @@ public class Console {
                         String.format("%d. %s\n", i + 1, dates.toLocalDate().toString() + (i == 0 ? " (Today)" : "")));
             }
             sb.append("0. 뒤로가기\n").append("입력: ");
-            printf(sb.toString());
-
-            if ((command = input.getByPattern(LiteralRegex.RESERVATION_DATE_INPUT)) == null) {
-                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
-                continue;
-            }
-
+            String command = inputLoop(sb.toString(), LiteralRegex.RESERVATION_DATE_INPUT,
+                    "입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
             if (command.equals(Literals.BACK)) {
-                nextMenu = -1;
-            } else {
-                nextMenu = 1;
+                return;
             }
-
-            break;
-        }
-        if (nextMenu == -1) {
-            reservationMenu();
-        } else if (nextMenu == 1) {
             int num = Integer.parseInt(command);
             selectReservationRoomMenu(movie, systemTime.plusDays(num - 1).toLocalDate());
         }
@@ -381,239 +342,152 @@ public class Console {
     /* 부 프롬프트 2.2: 상영관 선택 */
     // 영화, 날짜 선택 완료
     private void selectReservationRoomMenu(Movie movie, LocalDate date) {
-        int nextMenu = 0;
         List<Long> rooms = movieScheduleService.getTheaterByMovieAndDate(movie, date);
         int page = 1;
         int totalPage = rooms.size() / 5 + (rooms.size() % 5 != 0 ? 1 : 0);
-        String command = "";
 
         while (true) {
-            command = "";
             StringBuilder sb = new StringBuilder("============== 상영관 선택 ==============\n");
             for (int i = (page - 1) * 5, idx = 1; idx <= 5 && i < rooms.size(); i++, idx++) {
                 sb.append(idx).append(". ").append(rooms.get(i)).append("관\n");
             }
             sb.append(String.format("=========== 페이지 %d / %d ===========\n", page, totalPage));
             sb.append("7. 이전 페이지\n8. 다음 페이지\n0. 뒤로가기\n입력: ");
-            printf(sb.toString());
 
-            if ((command = input.getByPattern(LiteralRegex.PAGE_NO_OPTION_INPUT)) == null) {
-                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
-                continue;
+            String command = inputLoop(sb.toString(), LiteralRegex.PAGE_NO_OPTION_INPUT,
+                    "입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+
+            int selected = Integer.parseInt(command);
+            if (1 <= selected && selected <= 5) {
+                if (!checkValidNumber(rooms.size(), page, selected)) {
+                    printError("해당 상영관이 존재하지 않습니다. 다시 입력해 주세요.");
+                    continue;
+                }
+                selectReservationTimeMenu(movie, date, rooms.get(getPageNumber(page, selected) - 1));
+            }
+            if (command.equals(Literals.PREVIOUS_PAGE)) {
+                if (!movieService.hasPreviousPage(page)) {
+                    printError("이전 페이지가 존재하지 않습니다.");
+                    continue;
+                }
+                page--;
             }
 
-            switch (command) {
-                case "1":
-                case "2":
-                case "3":
-                case "4":
-                case "5": {
-                    int num = Integer.parseInt(command);
-                    if (!checkValidNumber(rooms.size(), page, num)) {
-                        printError("해당 관이 존재하지 않습니다. 다시 입력해 주세요.");
-                        continue;
-                    } else {
-                        nextMenu = 1;
-                    }
-                    break;
+            if (command.equals(Literals.NEXT_PAGE)) {
+                if (!movieService.hasNextPage(page)) {
+                    printError("다음 페이지가 존재하지 않습니다.\n");
+                    continue;
                 }
-
-                case Literals.PREVIOUS_PAGE: {
-                    if ((page - 1) >= 1) {
-                        page--;
-                    } else {
-                        printError("이전 페이지가 존재하지 않습니다.");
-                    }
-                    break;
-                }
-
-                case Literals.NEXT_PAGE: {
-                    if ((page + 1) <= totalPage) {
-                        page++;
-                    } else {
-                        printError("다음 페이지가 존재하지 않습니다.\n");
-                    }
-                    break;
-                }
-
-                case Literals.BACK: {
-                    nextMenu = -1;
-                    break;
-                }
+                page++;
             }
-
-            if (nextMenu != 0) {
-                break;
+            if (command.equals(Literals.BACK)) {
+                return;
             }
         }
-        if (nextMenu == -1) {
-            selectReservationDateMenu(movie);
-        } else if (nextMenu == 1) {
-            int num = Integer.parseInt(command);
-            selectReservationTimeMenu(movie, date, rooms.get(getPageNumber(page, num) - 1));
-        }
+
     }
 
     /* 부 프롬프트 2.3: 일정 선택 */
     // 시간 선택
     private void selectReservationTimeMenu(Movie movie, LocalDate date, Long roomNumber) {
-        List<LocalTime> schedules = movieScheduleService.getMovieStartAtTimeByDateAndRoomNumber(movie.getId(), date,
-                roomNumber);
-        int sz = schedules.size();
         int page = 1;
-        int totalPage = sz / 5 + (sz % 5 != 0 ? 1 : 0);
-        int nextMenu = 0;
-        String command = "";
 
         while (true) {
-            command = "";
+            List<LocalTime> schedules = movieScheduleService.getMovieStartAtTimeByDateAndRoomNumber(movie.getId(), date,
+                    roomNumber);
+            int sz = schedules.size();
+            int totalPage = sz / 5 + (sz % 5 != 0 ? 1 : 0);
             StringBuilder sb = new StringBuilder("============== 일정 선택 ==============\n");
             for (int i = (page - 1) * 5, idx = 1; idx <= 5 && i < sz; i++, idx++) {
                 LocalTime startAtTime = schedules.get(i);
                 LocalTime endAtTime = startAtTime.plusMinutes(movie.getRunningTime());
                 Room room = movieScheduleService.getRoomByMovieSchedule(movie, date, startAtTime,
                         String.valueOf(roomNumber));
-                sb.append(idx).append(". ").append(startAtTime.toString()).append("-").append(endAtTime.toString())
+                sb.append(idx).append(". ").append(startAtTime).append("-").append(endAtTime.toString())
                         .append(String.format("[%d / %d]\n", room.getRemainSeats(), room.getTotalSeats()));
             }
             sb.append(String.format("=========== 페이지 %d / %d ===========\n", page, totalPage));
             sb.append("7. 이전 페이지\n8. 다음 페이지\n0. 뒤로가기\n입력: ");
-            printf(sb.toString());
+            String command = inputLoop(sb.toString(), LiteralRegex.PAGE_NO_OPTION_INPUT,
+                    "입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+            int selected = Integer.parseInt(command);
 
-            if ((command = input.getByPattern(LiteralRegex.PAGE_NO_OPTION_INPUT)) == null) {
-                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
-                continue;
+            if (1 <= selected && selected <= 5) {
+                if (!checkValidNumber(sz, page, selected)) {
+                    printError("해당 일정이 존재하지 않습니다. 다시 입력해 주세요.");
+                    continue;
+                }
+                MovieSchedule movieSchedule = movieScheduleService.getByMovieAndDateAndRoomNumberAndStartAt(movie, date,
+                        roomNumber, schedules.get(getPageNumber(page, selected) - 1));
+                selectReservationSeatMenu(movieSchedule);
+            }
+            if (command.equals(Literals.PREVIOUS_PAGE)) {
+                if (!movieService.hasPreviousPage(page)) {
+                    printError("이전 페이지가 존재하지 않습니다.");
+                    continue;
+                }
+                page--;
+            }
+            if (command.equals(Literals.NEXT_PAGE)) {
+                if (!movieService.hasNextPage(page)) {
+                    printError("다음 페이지가 존재하지 않습니다.\n");
+                    continue;
+                }
+                page++;
             }
 
-            switch (command) {
-                case "1":
-                case "2":
-                case "3":
-                case "4":
-                case "5": {
-                    int num = Integer.parseInt(command);
-                    if (!checkValidNumber(sz, page, num)) {
-                        printError("해당 일정이 존재하지 않습니다. 다시 입력해 주세요.");
-                        continue;
-                    } else {
-                        nextMenu = 1;
-                    }
-                    break;
-                }
-
-                case Literals.PREVIOUS_PAGE: {
-                    if ((page - 1) >= 1) {
-                        page--;
-                    } else {
-                        printError("이전 페이지가 존재하지 않습니다.");
-                    }
-                    break;
-                }
-
-                case Literals.NEXT_PAGE: {
-                    if ((page + 1) <= totalPage) {
-                        page++;
-                    } else {
-                        printError("다음 페이지가 존재하지 않습니다.\n");
-                    }
-                    break;
-                }
-
-                case Literals.BACK: {
-                    nextMenu = -1;
-                    break;
-                }
+            if (command.equals(Literals.BACK)) {
+                return;
             }
-
-            if (nextMenu != 0) {
-                break;
-            }
-        }
-
-        if (nextMenu == -1) {
-            selectReservationRoomMenu(movie, date);
-        } else {
-            int num = Integer.parseInt(command);
-
-            MovieSchedule movieSchedule = movieScheduleService.getByMovieAndDateAndRoomNumberAndStartAt(movie, date,
-                    roomNumber, schedules.get(getPageNumber(page, num) - 1));
-            selectReservationSeatMenu(movieSchedule);
         }
     }
 
     /* 부 프롬프트 2.4: 좌석 선택 */
     private void selectReservationSeatMenu(MovieSchedule movieSchedule) {
-        int nextMenu = 0;
-        String command = "";
-        Room room = movieSchedule.getRoom();
-
         while (true) {
-            command = "";
-            StringBuilder sb = new StringBuilder("============== 좌석 선택 ==============\n");
-            sb.append(room.getSeatsToString());
-            sb.append("입력 (뒤로가기: 0) : ");
-            printf(sb.toString());
+            Room room = movieSchedule.getRoom();
+            String sb = "============== 좌석 선택 ==============\n" + room.getSeatsToString()
+                    + "입력 (뒤로가기: 0) : ";
 
-            if ((command = input.getByPattern(LiteralRegex.SEAT_NUMBER)) == null) {
-                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
-                continue;
-            }
+            String command = inputLoop(sb, LiteralRegex.SEAT_NUMBER,
+                    "입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
 
             if (command.equals(Literals.BACK)) {
-                nextMenu = -1;
-                break;
-            } else if (room.getSeatById(command) != null) {
+                return;
+            }
+
+            if (room.getSeatById(command) != null) {
                 if (room.getSeatById(command).isReserved()) {
                     printError("이미 예매된 좌석입니다. 다시 입력해주세요.\n");
                     continue;
                 }
-                nextMenu = 1;
-                break;
+                inputPhoneNumberMenu(movieSchedule, command);
             } else {
                 printError("좌석이 존재하지 않거나 예매 불가능한 좌석입니다. 다시 입력해주세요.\n");
             }
-        }
-        if (nextMenu == -1) {
-            selectReservationTimeMenu(movieSchedule.getMovie(), movieSchedule.getStartAtDate(),
-                    Long.parseLong(movieSchedule.getRoom().getRoomNumber()));
-        } else if (nextMenu == 1) {
-            inputPhoneNumberMenu(movieSchedule, command);
         }
     }
 
     /* 부 프롬프트 2.5: 전화번호 입력 */
     private void inputPhoneNumberMenu(MovieSchedule movieSchedule, String seatId) {
-        int nextMenu = 0;
-        String command = "";
         while (true) {
             println("============== 전화번호 입력 ==============");
             printf("전화번호 입력(뒤로가기: 0): ");
-
-            if ((command = input.getByPattern(LiteralRegex.PHONE_NUMBER)) == null) {
-                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
-                continue;
-            }
+            String command = inputLoop("", LiteralRegex.PHONE_NUMBER,
+                    "입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
 
             if (command.equals(Literals.BACK)) {
-                nextMenu = -1;
-            } else {
-                nextMenu = 1;
+                return;
             }
 
-            if (nextMenu != 0) {
-                break;
-            }
-        }
-        if (nextMenu == -1) {
-            selectReservationSeatMenu(movieSchedule);
-        } else if (nextMenu == 1) {
             String ticketId = ticketService.addReservation(movieSchedule, seatId, command, systemTime);
             if (ticketId.equals(TicketService.OVERLAPPING_TIME)) {
                 printError("같은 시간에 다른 상영관에서 영화가 예매되어 있습니다.");
-                inputPhoneNumberMenu(movieSchedule, seatId);
-            } else {
-                printReservationCodeMenu(ticketId);
+                continue;
             }
+
+            printReservationCodeMenu(ticketId);
+            return;
         }
     }
 
@@ -625,49 +499,48 @@ public class Console {
 
     /* 부 프롬프트 3: 예매 취소 */
     private void cancelReservationMenu() {
-        String command = "";
         while (true) {
             println("============== 예매취소 ==============");
-            printf("예매 코드 입력 (뒤로 가기: 0): ");
-            if ((command = input.getByPattern(LiteralRegex.RESERVATION_CODE)) == null) {
-                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
-                continue;
-            }
+            String command = inputLoop("예매 코드 입력 (뒤로 가기: 0): ", LiteralRegex.RESERVATION_CODE,
+                    "입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
+
             if (command.equals(Literals.BACK)) {
                 return;
             }
+
             if (!ticketService.isTicketExistsById(command)) {
                 printError("존재하지 않는 예매 코드입니다. 다시 입력해주세요.\n");
-            } else if (ticketService.isTicketAlreadyCanceled(command)) {
-                printError("이미 취소된 예매정보입니다. 다시 입력해주세요.\n");
-            } else if (!ticketService.cancelReservation(command, systemTime)) {
-                printError("이미 지난 예매정보입니다. 다시 입력해주세요.\n");
-            } else {
-                println("예매가 취소되었습니다.");
-                break;
+                continue;
             }
+
+            if (ticketService.isTicketAlreadyCanceled(command)) {
+                printError("이미 취소된 예매정보입니다. 다시 입력해주세요.\n");
+                continue;
+            }
+
+            if (!ticketService.cancelReservation(command, systemTime)) {
+                printError("이미 지난 예매정보입니다. 다시 입력해주세요.\n");
+                continue;
+            }
+
+            println("예매가 취소되었습니다.");
+            return;
         }
     }
 
     /* 부 프롬프트 4: 예매 내역 조회 */
     private void checkReservationDetailsMenu() {
-        int nextMenu = 0;
-        String command = "";
         while (true) {
             println("============== 전화번호 입력 ==============");
-            printf("전화번호 입력(뒤로가기: 0): ");
-
-            if ((command = input.getByPattern(LiteralRegex.PHONE_NUMBER)) == null) {
-                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
-                continue;
-            }
+            String command = inputLoop("전화번호 입력 (뒤로 가기: 0): ", LiteralRegex.PHONE_NUMBER,
+                    "입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
 
             if (command.equals(Literals.BACK)) {
-                nextMenu = -1;
-                break;
+                return;
             }
 
             List<TicketVO> tickets = ticketService.getTicketStatus(command);
+
             if (tickets.isEmpty()) {
                 printError("해당하는 예매내역이 없습니다. 다시 입력해주세요.");
                 continue;
@@ -679,23 +552,15 @@ public class Console {
                         ticket.getMovieTitle(), ticket.getStartAtDate().toString(), ticket.getStartAtTime().toString(),
                         ticket.getRoomNumber(), ticket.getSeatNumber()));
             }
-            break;
-        }
-        if (nextMenu == -1) {
             return;
         }
     }
 
     /* 시스템 시각 입력 */
     public void inputCurrentTime() {
-        String command = "";
         while (true) {
-            printf("기준 시각 입력 (yyyy-MM-dd-HH-mm 형식): ");
-
-            if ((command = input.getByPattern(LiteralRegex.SYSTEM_TIME)) == null) {
-                printError("입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
-                continue;
-            }
+            String command = inputLoop("기준 시각 입력 (yyyy-MM-dd-HH-mm 형식): ", LiteralRegex.SYSTEM_TIME,
+                    "입력 형식에 맞지 않습니다. 다시 입력해주세요.\n");
 
             int year = Integer.parseInt(command.split("-")[0]);
             int month = Integer.parseInt(command.split("-")[1]);
@@ -715,7 +580,7 @@ public class Console {
                 continue;
             }
 
-            break;
+            return;
         }
     }
 

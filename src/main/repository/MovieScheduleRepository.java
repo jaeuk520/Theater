@@ -31,9 +31,9 @@ public class MovieScheduleRepository extends StringIdEntityDatabase<MovieSchedul
     public MovieSchedule findOne(Movie movie, LocalDate date, Long roomNumber, LocalTime startAt) {
         return findAll().stream()
                 .filter(movieSchedule -> movieSchedule.getMovie().getId().equals(movie.getId()))
-                .filter(movieSchedule -> movieSchedule.getStartAtDate() == date)
+                .filter(movieSchedule -> movieSchedule.getStartAtDate().equals(date))
                 .filter(movieSchedule -> movieSchedule.getRoom().getRoomNumber().equals(String.valueOf(roomNumber)))
-                .filter(movieSchedule -> movieSchedule.getStartAtTime() == startAt)
+                .filter(movieSchedule -> movieSchedule.getStartAtTime().equals(startAt))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }
