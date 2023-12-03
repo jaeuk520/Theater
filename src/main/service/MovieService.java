@@ -36,4 +36,20 @@ public class MovieService {
     public void addMovie(String movieName, int runningTime) {
         movieRepository.save(new Movie(null, movieName, runningTime));
     }
+
+    public void deleteMovie(String movieId) {
+        movieRepository.delete(movieId);
+    }
+
+    public void modifyMovieName(Movie movie, String movieName) {
+        movieRepository.modify(movie.getId(), new Movie(movie.getId(), movieName, movie.getRunningTime()));
+    }
+
+    public void modifyMovieRunningTime(Movie movie, int runningTime) {
+        movieRepository.modify(movie.getId(), new Movie(movie.getId(), movie.getName(), runningTime));
+    }
+
+    public void modifyMovieName(Movie movie, String movieName, int runningTime) {
+        movieRepository.modify(movie.getId(), new Movie(movie.getId(), movieName, runningTime));
+    }
 }

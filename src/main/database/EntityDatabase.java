@@ -42,6 +42,14 @@ public abstract class EntityDatabase<E> {
         return true;
     }
 
+    public boolean modify(String id, E modifiedData) {
+        if (!data.containsKey(id)) {
+            return false;
+        }
+        data.put(id, modifiedData);
+        return true;
+    }
+
     public Optional<E> findById(String id) {
         if (!data.containsKey(id)) {
             return Optional.empty();

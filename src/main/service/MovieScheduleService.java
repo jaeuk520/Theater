@@ -105,4 +105,9 @@ public class MovieScheduleService {
                                                                   LocalTime startAt) {
         return movieScheduleRepository.findOne(movie, date, roomNumber, startAt);
     }
+
+    // 특정 영화의 상영 스케줄이 존재하는지 확인
+    public boolean isMovieScheduled(Movie movie) {
+        return movieScheduleRepository.findMovieScheduleByMovieId(movie).isPresent();
+    }
 }

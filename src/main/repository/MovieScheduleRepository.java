@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MovieScheduleRepository extends StringIdEntityDatabase<MovieSchedule> {
@@ -36,5 +37,11 @@ public class MovieScheduleRepository extends StringIdEntityDatabase<MovieSchedul
                 .filter(movieSchedule -> movieSchedule.getStartAtTime().equals(startAt))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
+    }
+
+    public Optional<MovieSchedule> findMovieScheduleByMovieId(Movie movie) {
+        return findAll().stream()
+                .filter(movieSchedule -> movieSchedule.getMovie().getId().equals(movie.getId()))
+                .findFirst();
     }
 }
